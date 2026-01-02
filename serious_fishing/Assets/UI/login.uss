@@ -1,0 +1,364 @@
+/* 1. The Main Container (Full Screen) */
+.root-container {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-image: url("project://database/Assets/Sprites/Background/Gemini_Generated_Image_rv82oyrv82oyrv82.png");
+}
+
+/* Error Popup */
+.error-popup {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    translate: -50% 0;
+    width: auto;
+    max-width: 500px;
+    min-width: 300px;
+    background-color: rgba(220, 50, 50, 0.95);
+    color: white;
+    font-size: 20px;
+    -unity-font-style: bold;
+    padding: 20px 40px;
+    border-radius: 15px;
+    border-width: 2px;
+    border-color: rgb(255, 100, 100);
+    -unity-text-align: middle-center;
+    align-self: center;
+    opacity: 1;
+}
+
+.error-popup.hidden {
+    opacity: 0;
+    transition-duration: 0.5s;
+}
+
+/* Success Popup */
+.success-popup {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    translate: -50% 0;
+    width: auto;
+    min-width: 300px;
+    max-width: 500px;
+    background-color: rgba(40, 180, 120, 0.95);
+    color: white;
+    font-size: 18px;
+    -unity-font-style: bold;
+    padding: 15px 30px;
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(80, 220, 150);
+    align-self: center;
+    -unity-text-align: middle-center;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+    opacity: 1;
+}
+
+.success-popup.hidden {
+    opacity: 0;
+    transition-duration: 0.5s;
+}
+
+/* 2. The Login Card (Beautiful gradient background) */
+.login-card {
+    width: 900px;
+    background-color: rgba(15, 35, 65, 0.92);
+    border-radius: 25px;
+    padding: 40px;
+    margin-top: 300px;
+    border-width: 3px;
+    border-color: rgba(40, 130, 180, 0.8); /* Ocean blue border */
+}
+
+/* 3. The Input Fields */
+.game-input {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: white;
+    -unity-font-style: bold;
+}
+
+/* 4. The Actual Input Box */
+.game-input > .unity-base-field__input {
+    background-color: rgba(40, 130, 180, 0.2); /* Ocean blue tint */
+    border-color: rgba(40, 130, 180, 0.7);
+    border-width: 2px;
+    border-radius: 12px;
+    padding: 12px;
+    color: white;
+    font-size: 18px;
+}
+
+.game-input > .unity-base-field__input:focus {
+    border-color: rgb(60, 180, 230); /* Bright cyan on focus */
+    background-color: rgba(40, 130, 180, 0.35);
+}
+
+/* 5. The Main Action Buttons - Beautiful Gradient */
+.game-button {
+    height: 60px;
+    background-color: rgb(30, 100, 150); /* Ocean blue button */
+    border-radius: 15px;
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: white;
+    border-width: 2px;
+    border-color: rgba(60, 180, 230, 0.7);
+    margin-top: 10px;
+    transition-duration: 0.3s;
+}
+
+.game-button:hover {
+    background-color: rgb(40, 130, 180); /* Brighter ocean blue */
+    border-color: rgb(60, 180, 230);
+    scale: 1.05;
+    translate: 0 -2px;
+}
+
+.game-button:active {
+    background-color: rgb(20, 80, 130); /* Darker ocean blue */
+    scale: 0.98;
+    translate: 0 0;
+}
+
+/* 6. Text Link Buttons */
+.text-button {
+    background-color: transparent;
+    border-width: 0;
+    color: rgba(100, 200, 255, 0.85); /* Cyan */
+    font-size: 18px;
+    margin-top: 15px;
+    transition-duration: 0.2s;
+}
+
+.text-button:hover {
+    color: rgb(130, 220, 255);
+    scale: 1.05;
+}
+
+/* 7. Utility to Hide Elements */
+.hidden {
+    display: none;
+}
+
+/* 8. Welcome View Styles - Stunning Design */
+.welcome-title {
+    font-size: 52px;
+    color: rgb(60, 180, 230); /* Cyan */
+    -unity-font-style: bold;
+    align-self: center;
+    margin-bottom: 15px;
+    -unity-text-align: middle-center;
+    text-shadow: 0px 0px 20px rgba(40, 130, 180, 0.8);
+}
+
+.welcome-subtitle {
+    font-size: 26px;
+    color: rgba(100, 200, 255, 0.9);
+    align-self: center;
+    margin-bottom: 50px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold-and-italic;
+}
+
+.welcome-buttons {
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-btn-primary {
+    height: 90px;
+    font-size: 32px;
+    margin-bottom: 20px;
+    width: 450px;
+    background-color: rgb(30, 100, 150); /* Ocean blue */
+    border-color: rgb(60, 180, 230);
+}
+
+.welcome-btn-primary:hover {
+    background-color: rgb(40, 130, 180);
+}
+
+.welcome-btn-secondary {
+    height: 70px;
+    font-size: 24px;
+    background-color: rgba(30, 100, 150, 0.7);
+    border-color: rgba(40, 130, 180, 0.6);
+    margin-bottom: 20px;
+    width: 450px;
+}
+
+.welcome-btn-secondary:hover {
+    background-color: rgba(40, 130, 180, 0.9);
+    border-color: rgb(60, 180, 230);
+}
+
+/* 9. Settings Panel Styles */
+.settings-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    flex-grow: 1;
+}
+
+.settings-card {
+    width: 700px;
+    background-color: rgba(15, 35, 65, 0.95);
+    border-radius: 25px;
+    padding: 40px;
+    border-width: 3px;
+    border-color: rgba(40, 130, 180, 0.8);
+}
+
+.settings-title {
+    font-size: 36px;
+    color: rgb(100, 200, 255);
+    -unity-font-style: bold;
+    align-self: center;
+    margin-bottom: 30px;
+    -unity-text-align: middle-center;
+}
+
+.settings-group {
+    margin-bottom: 25px;
+}
+
+.settings-label {
+    font-size: 20px;
+    color: white;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.settings-value {
+    font-size: 24px;
+    color: rgb(60, 180, 230);
+    -unity-font-style: bold;
+    margin-left: 10px;
+}
+
+.settings-slider {
+    height: 30px;
+    margin-top: 5px;
+}
+
+.settings-slider > .unity-base-slider__tracker {
+    background-color: rgba(40, 130, 180, 0.35);
+    border-radius: 10px;
+    height: 8px;
+}
+
+.settings-slider > .unity-base-slider__dragger {
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    background-color: rgb(60, 180, 230);
+    border-width: 2px;
+    border-color: white;
+}
+
+.settings-dropdown {
+    font-size: 18px;
+    background-color: rgba(40, 130, 180, 0.25);
+    border-color: rgba(40, 130, 180, 0.7);
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+}
+
+.settings-buttons {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.settings-btn-save {
+    width: 48%;
+    height: 60px;
+    font-size: 22px;
+    background-color: rgb(30, 100, 150);
+}
+
+.settings-btn-close {
+    width: 48%;
+    height: 60px;
+    font-size: 22px;
+    background-color: rgba(20, 80, 130, 0.7);
+}
+
+/* 10. Pause Menu Styles */
+.pause-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.85);
+    flex-grow: 1;
+}
+
+.pause-card {
+    width: 600px;
+    background-color: rgba(15, 35, 65, 0.95);
+    border-radius: 25px;
+    padding: 50px;
+    border-width: 3px;
+    border-color: rgb(40, 130, 180);
+    align-items: center;
+}
+
+.pause-title {
+    font-size: 48px;
+    color: rgb(100, 200, 255);
+    -unity-font-style: bold;
+    margin-bottom: 40px;
+    -unity-text-align: middle-center;
+    text-shadow: 0px 0px 15px rgba(40, 130, 180, 0.8);
+}
+
+.pause-button {
+    width: 100%;
+    height: 70px;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.pause-btn-continue {
+    background-color: rgb(30, 100, 150);
+}
+
+.pause-btn-settings {
+    background-color: rgba(30, 100, 150, 0.8);
+}
+
+.pause-btn-save {
+    background-color: rgba(40, 130, 180, 0.75);
+}
+
+.pause-btn-menu {
+    background-color: rgba(20, 80, 130, 0.7);
+}
+
+.pause-btn-quit {
+    background-color: rgba(139, 0, 0, 0.6); /* Dark red for quit */
+    border-color: rgba(220, 20, 60, 0.6);
+}
+
+.pause-btn-quit:hover {
+    background-color: rgba(220, 20, 60, 0.8);
+}

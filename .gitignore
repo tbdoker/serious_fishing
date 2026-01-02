@@ -1,0 +1,80 @@
+# =========================
+# Unity
+# =========================
+serious_fishing/Library/
+serious_fishing/Temp/
+serious_fishing/Logs/
+serious_fishing/UserSettings/
+serious_fishing/Builds/
+serious_fishing/obj/
+serious_fishing/MemoryCaptures/
+
+# Unity meta files (keep these, but ignore generated ones in Library)
+# *.meta  # Don't ignore - Unity needs these
+
+# Crashlogs
+sysinfo.txt
+crashlog.txt
+
+# =========================
+# Python / Backend
+# =========================
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+# =========================
+# Node / React Dashboard
+# =========================
+therapist-dashboard-react/node_modules/
+therapist-dashboard-react/dist/
+therapist-dashboard-react/.vite/
+node_modules/
+
+# =========================
+# IDE / Editors
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# =========================
+# OS Generated
+# =========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Misc
+# =========================
+*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

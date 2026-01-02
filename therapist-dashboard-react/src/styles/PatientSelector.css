@@ -1,0 +1,56 @@
+.patient-selector-card {
+  background: white;
+}
+
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.selector-header h2 {
+  margin: 0;
+  color: #0d47a1;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.selector-content label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.selector-content select {
+  max-width: 400px;
+}
+
+.no-children-message {
+  margin-top: 15px;
+  padding: 15px;
+  background: #e3f2fd;
+  border-left: 4px solid #1976d2;
+  color: #0d47a1;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .selector-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .selector-header button {
+    width: 100%;
+  }
+
+  .selector-content select {
+    max-width: 100%;
+  }
+}

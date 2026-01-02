@@ -1,0 +1,120 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="login.uss" />
+
+    <!-- Error Popup Label (outside overlay so visible during pause) -->
+    <ui:Label name="errorLabel" text="Error Message" class="error-popup hidden" />
+
+    <!-- Success Popup Label (outside overlay so visible during pause) -->
+    <ui:Label name="successLabel" text="Success!" class="success-popup hidden" />
+
+    <ui:VisualElement name="overlay" class="root-container">
+        
+        <ui:VisualElement name="card" class="login-card">
+
+            <ui:VisualElement name="loginView">
+                
+                <ui:TextField label="Username" name="loginUsername" class="game-input" />
+                <ui:TextField label="Password" name="loginPassword" password="true" class="game-input" />
+                
+                <ui:Button text="LOGIN" name="btnLogin" class="game-button" />
+                
+                <ui:Button text="New here? Create Account" name="linkToRegister" class="text-button" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="registerView" class="hidden">
+                <ui:Label text="Create Account" style="color:white; font-size: 28px; -unity-font-style: bold; align-self: center; margin-bottom: 20px;" />
+
+                <ui:TextField label="Username" name="regUsername" class="game-input" />
+                <ui:TextField label="Email" name="regEmail" class="game-input" />
+                <ui:TextField label="First Name" name="regFirstName" class="game-input" />
+                <ui:TextField label="Last Name" name="regLastName" class="game-input" />
+                <ui:TextField label="Age" name="regAge" class="game-input" />
+
+                <ui:TextField label="Password" name="regPassword" password="true" class="game-input" />
+                <ui:TextField label="Confirm" name="regConfirm" password="true" class="game-input" />
+
+                <ui:Button text="REGISTER" name="btnRegister" class="game-button" />
+
+                <ui:Button text="Back to Login" name="linkToLogin" class="text-button" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="welcomeView" class="hidden">
+                <ui:Label text="Welcome!" name="welcomeText" class="welcome-title" />
+
+                <ui:Label text="Ready to start your session?" class="welcome-subtitle" />
+
+                <ui:VisualElement class="welcome-buttons">
+                    <ui:Button text="START PLAYING" name="btnStartPlaying" class="game-button welcome-btn-primary" />
+                    <ui:Button text="SETTINGS" name="btnWelcomeSettings" class="game-button welcome-btn-secondary" />
+                    <ui:Button text="LOGOUT" name="btnLogout" class="text-button" />
+                    <ui:Button text="QUIT GAME" name="btnQuit" class="game-button pause-btn-quit" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+
+    <!-- Settings Panel (Outside overlay so it works during pause) -->
+    <ui:VisualElement name="settingsPanel" class="settings-panel hidden">
+        <ui:VisualElement class="settings-card">
+            <ui:Label text="GAME SETTINGS" class="settings-title" />
+
+            <!-- Fish Speed -->
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Fish Speed:" class="settings-label" />
+                    <ui:Label text="0.5x" name="speedValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="speedSlider" low-value="0.5" high-value="3" value="0.5" class="settings-slider" />
+            </ui:VisualElement>
+
+            <!-- Min Spawn Interval -->
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Min Spawn Interval:" class="settings-label" />
+                    <ui:Label text="3.0s" name="minSpawnValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="minSpawnSlider" low-value="0.5" high-value="10" value="3" class="settings-slider" />
+            </ui:VisualElement>
+
+            <!-- Max Spawn Interval -->
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Max Spawn Interval:" class="settings-label" />
+                    <ui:Label text="6.0s" name="maxSpawnValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="maxSpawnSlider" low-value="0.5" high-value="15" value="6" class="settings-slider" />
+            </ui:VisualElement>
+
+            <!-- Spawn From -->
+            <ui:VisualElement class="settings-group">
+                <ui:Label text="Spawn Side:" class="settings-label" />
+                <ui:DropdownField name="spawnDropdown" class="settings-dropdown" />
+            </ui:VisualElement>
+
+            <!-- Target Fish Mode -->
+            <ui:VisualElement class="settings-group">
+                <ui:Label text="Target Fish:" class="settings-label" />
+                <ui:DropdownField name="targetFishDropdown" class="settings-dropdown" />
+            </ui:VisualElement>
+
+            <!-- Buttons -->
+            <ui:VisualElement class="settings-buttons">
+                <ui:Button text="SAVE" name="btnSaveSettings" class="game-button settings-btn-save" />
+                <ui:Button text="CLOSE" name="btnCloseSettings" class="game-button settings-btn-close" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+
+    <!-- Pause Menu (Outside overlay so game is visible in background) -->
+    <ui:VisualElement name="pauseMenu" class="pause-overlay hidden">
+        <ui:VisualElement class="pause-card">
+            <ui:Label text="PAUSED" class="pause-title" />
+            <ui:Button text="CONTINUE" name="btnContinue" class="game-button pause-button pause-btn-continue" />
+            <ui:Button text="SETTINGS" name="btnPauseSettings" class="game-button pause-button pause-btn-settings" />
+            <ui:Button text="SAVE AND RETURN TO MENU" name="btnSaveAndEnd" class="game-button pause-button pause-btn-save" />
+            <ui:Button text="RETURN TO MENU" name="btnReturnToMenu" class="game-button pause-button pause-btn-menu" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

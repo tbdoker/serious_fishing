@@ -1,0 +1,15 @@
+{
+  "name": "serious-fishing-full",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serious Fishing Therapy System - Full Stack Application",
+  "scripts": {
+    "dev": "cd therapist-dashboard-react && npm run dev",
+    "build": "cd therapist-dashboard-react && npm run build",
+    "preview": "cd therapist-dashboard-react && npm run preview",
+    "install-frontend": "cd therapist-dashboard-react && npm install"
+  },
+  "workspaces": [
+    "therapist-dashboard-react"
+  ]
+}
