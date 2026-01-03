@@ -389,13 +389,20 @@ export default function ChildDetail() {
             yAxisID: 'y1',
           },
           {
-            label: 'Adjusted Score',
-            data: chartData.map((d) => d.adjustedScore),
+            label: 'Adjusted Score %',
+            data: chartData.map((d) => {
+              // PFF-style: adjust based on deviation from baseline difficulty
+              const baselineDifficulty = 1.0;
+              const maxDifficulty = 2.5;
+              const difficultyDelta = (d.difficulty - baselineDifficulty) / (maxDifficulty - baselineDifficulty);
+              const adjustmentFactor = 1 + (difficultyDelta * 0.2); // ±20% adjustment
+              return Math.min(d.accuracy * adjustmentFactor, 100);
+            }),
             borderColor: '#4caf50',
             backgroundColor: 'rgba(76, 175, 80, 0.1)',
             fill: false,
             tension: 0.4,
-            yAxisID: 'y1',
+            yAxisID: 'y',
           },
         ],
       }
