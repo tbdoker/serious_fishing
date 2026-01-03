@@ -50,6 +50,20 @@ public class FishCatcher : MonoBehaviour
         // Update streak display
         GameManager.Instance.UpdateStreakUI();
 
+        var audioManager = AudioManager.Instance ?? FindFirstObjectByType<AudioManager>();
+        if (audioManager != null)
+        {
+            if (isCorrect)
+            {
+                audioManager.PlayCorrectFish();
+            }
+            else
+            {
+                audioManager.PlayWrongFish();
+            }
+            audioManager.PlayVfx();
+        }
+
         Debug.Log($"[Reaction] Clicked {data.type} fish | Spawned at: {data.spawnTime:F2} | Clicked at: {Time.time:F2} | Reaction: {reaction:F2}s");
         Destroy(gameObject);
     }

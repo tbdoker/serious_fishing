@@ -18,4 +18,8 @@ public class GameSettingsDTO
     public float cursorSize;
     public float grabThreshold;
     public float jointSize;
+    public float musicVolume;
+    public float correctFishVolume;
+    public float wrongFishVolume;
+    public float menuVolume;
 }

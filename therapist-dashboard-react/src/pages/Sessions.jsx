@@ -277,11 +277,7 @@ export default function Sessions() {
                   <td>{formatDuration(session.sessionDuration)}</td>
                   <td>
                     <span className="badge badge-info">
-                      {session.handTrackingUsed === true
-                        ? 'Yes'
-                        : session.handTrackingUsed === false
-                        ? 'No'
-                        : '—'}
+                      {session.handTrackingUsed === true ? 'Yes' : 'No'}
                     </span>
                   </td>
                   <td>

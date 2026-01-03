@@ -40,7 +40,11 @@ DEFAULT_GAME_SETTINGS = {
     "showGrabCursor": True,
     "cursorSize": 3.0,
     "grabThreshold": 0.6,
-    "jointSize": 7.0
+    "jointSize": 7.0,
+    "musicVolume": 0.6,
+    "correctFishVolume": 1.0,
+    "wrongFishVolume": 1.0,
+    "menuVolume": 0.8
 }
 
 # ----------------------------
@@ -341,7 +345,11 @@ def get_therapist_children():
                 "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]) if settings else DEFAULT_GAME_SETTINGS["showGrabCursor"],
                 "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]) if settings else DEFAULT_GAME_SETTINGS["cursorSize"],
                 "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]) if settings else DEFAULT_GAME_SETTINGS["grabThreshold"],
-                "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]) if settings else DEFAULT_GAME_SETTINGS["jointSize"]
+                "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]) if settings else DEFAULT_GAME_SETTINGS["jointSize"],
+                "musicVolume": settings.get("musicVolume", DEFAULT_GAME_SETTINGS["musicVolume"]) if settings else DEFAULT_GAME_SETTINGS["musicVolume"],
+                "correctFishVolume": settings.get("correctFishVolume", DEFAULT_GAME_SETTINGS["correctFishVolume"]) if settings else DEFAULT_GAME_SETTINGS["correctFishVolume"],
+                "wrongFishVolume": settings.get("wrongFishVolume", DEFAULT_GAME_SETTINGS["wrongFishVolume"]) if settings else DEFAULT_GAME_SETTINGS["wrongFishVolume"],
+                "menuVolume": settings.get("menuVolume", DEFAULT_GAME_SETTINGS["menuVolume"]) if settings else DEFAULT_GAME_SETTINGS["menuVolume"]
             }
         })
 
@@ -452,7 +460,11 @@ def get_child_details(child_id):
                 "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]) if settings else DEFAULT_GAME_SETTINGS["showGrabCursor"],
                 "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]) if settings else DEFAULT_GAME_SETTINGS["cursorSize"],
                 "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]) if settings else DEFAULT_GAME_SETTINGS["grabThreshold"],
-                "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]) if settings else DEFAULT_GAME_SETTINGS["jointSize"]
+                "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]) if settings else DEFAULT_GAME_SETTINGS["jointSize"],
+                "musicVolume": settings.get("musicVolume", DEFAULT_GAME_SETTINGS["musicVolume"]) if settings else DEFAULT_GAME_SETTINGS["musicVolume"],
+                "correctFishVolume": settings.get("correctFishVolume", DEFAULT_GAME_SETTINGS["correctFishVolume"]) if settings else DEFAULT_GAME_SETTINGS["correctFishVolume"],
+                "wrongFishVolume": settings.get("wrongFishVolume", DEFAULT_GAME_SETTINGS["wrongFishVolume"]) if settings else DEFAULT_GAME_SETTINGS["wrongFishVolume"],
+                "menuVolume": settings.get("menuVolume", DEFAULT_GAME_SETTINGS["menuVolume"]) if settings else DEFAULT_GAME_SETTINGS["menuVolume"]
             }
         }
     })
@@ -632,7 +644,11 @@ def get_child_settings(child_id):
             "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]),
             "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]),
             "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]),
-            "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"])
+            "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]),
+            "musicVolume": settings.get("musicVolume", DEFAULT_GAME_SETTINGS["musicVolume"]),
+            "correctFishVolume": settings.get("correctFishVolume", DEFAULT_GAME_SETTINGS["correctFishVolume"]),
+            "wrongFishVolume": settings.get("wrongFishVolume", DEFAULT_GAME_SETTINGS["wrongFishVolume"]),
+            "menuVolume": settings.get("menuVolume", DEFAULT_GAME_SETTINGS["menuVolume"])
         }
     })
 
@@ -689,6 +705,14 @@ def update_child_settings(child_id):
         update_data["grabThreshold"] = float(data["grabThreshold"])
     if "jointSize" in data:
         update_data["jointSize"] = float(data["jointSize"])
+    if "musicVolume" in data:
+        update_data["musicVolume"] = float(data["musicVolume"])
+    if "correctFishVolume" in data:
+        update_data["correctFishVolume"] = float(data["correctFishVolume"])
+    if "wrongFishVolume" in data:
+        update_data["wrongFishVolume"] = float(data["wrongFishVolume"])
+    if "menuVolume" in data:
+        update_data["menuVolume"] = float(data["menuVolume"])
 
     update_data["updatedAt"] = datetime.utcnow()
     update_data["updatedBy"] = payload["userId"]
@@ -1157,7 +1181,11 @@ def game_settings():
             "showGrabCursor": data.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]),
             "cursorSize": data.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]),
             "grabThreshold": data.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]),
-            "jointSize": data.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"])
+            "jointSize": data.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]),
+            "musicVolume": data.get("musicVolume", DEFAULT_GAME_SETTINGS["musicVolume"]),
+            "correctFishVolume": data.get("correctFishVolume", DEFAULT_GAME_SETTINGS["correctFishVolume"]),
+            "wrongFishVolume": data.get("wrongFishVolume", DEFAULT_GAME_SETTINGS["wrongFishVolume"]),
+            "menuVolume": data.get("menuVolume", DEFAULT_GAME_SETTINGS["menuVolume"])
         }
 
         if username:
@@ -1199,7 +1227,11 @@ def game_settings():
         "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]),
         "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]),
         "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]),
-        "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"])
+        "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]),
+        "musicVolume": settings.get("musicVolume", DEFAULT_GAME_SETTINGS["musicVolume"]),
+        "correctFishVolume": settings.get("correctFishVolume", DEFAULT_GAME_SETTINGS["correctFishVolume"]),
+        "wrongFishVolume": settings.get("wrongFishVolume", DEFAULT_GAME_SETTINGS["wrongFishVolume"]),
+        "menuVolume": settings.get("menuVolume", DEFAULT_GAME_SETTINGS["menuVolume"])
     }
     print(f"[DEBUG] Returning settings: {response_data}")
     return jsonify(response_data)

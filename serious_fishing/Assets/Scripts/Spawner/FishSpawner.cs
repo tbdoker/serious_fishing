@@ -51,12 +51,18 @@ public class FishSpawner : MonoBehaviour
         float spawnY = Random.Range(-150f, 150f);
 
         // Pick left or right side based on settings
-        Vector3 edge = (settings.spawnFrom == GameSettings.SpawnSide.Left)
+        GameSettings.SpawnSide spawnSide = settings.spawnFrom;
+        if (spawnSide == GameSettings.SpawnSide.Random)
+        {
+            spawnSide = (Random.value < 0.5f) ? GameSettings.SpawnSide.Left : GameSettings.SpawnSide.Right;
+        }
+
+        Vector3 edge = (spawnSide == GameSettings.SpawnSide.Left)
             ? Camera.main.ViewportToWorldPoint(new Vector3(0, 0.5f, 0))
             : Camera.main.ViewportToWorldPoint(new Vector3(1, 0.5f, 0));
 
         // Offset so fish don't spawn at exactly edge
-        float direction = (settings.spawnFrom == GameSettings.SpawnSide.Left) ? 1f : -1f;
+        float direction = (spawnSide == GameSettings.SpawnSide.Left) ? 1f : -1f;
         Vector3 spawnPos = new Vector3(edge.x + direction * 1f, spawnY, 0f);
 
         // Instantiate fish
@@ -80,12 +86,12 @@ public class FishSpawner : MonoBehaviour
         }
 
         // Flip fish if moving right
-        sr.flipX = (settings.spawnFrom == GameSettings.SpawnSide.Left);
+        sr.flipX = (spawnSide == GameSettings.SpawnSide.Left);
 
         // Apply speed
         FishMovement movement = fish.GetComponent<FishMovement>();
         movement.speed = settings.GetRandomSpeed();
-        movement.direction = (settings.spawnFrom == GameSettings.SpawnSide.Left)
+        movement.direction = (spawnSide == GameSettings.SpawnSide.Left)
             ? Vector2.right
             : Vector2.left;
 

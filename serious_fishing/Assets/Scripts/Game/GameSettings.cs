@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GameSettings", menuName = "Game/Game Settings")]
 public class GameSettings : ScriptableObject
 {
-    public enum SpawnSide { Left, Right }
+    public enum SpawnSide { Left, Right, Random }
     public enum TargetFishMode { Random, FixedRed, FixedBlue, FixedYellow, FixedPink, FixedGreen }
 
     [Header("Speed Settings")]

@@ -67,6 +67,7 @@ export default function ChildDetail() {
   const [deletingSession, setDeletingSession] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(null);
   const [timeGrouping, setTimeGrouping] = useState('session');
+  const [handFilter, setHandFilter] = useState('all');
 
   useEffect(() => {
     loadChildData();
@@ -188,13 +189,6 @@ export default function ChildDetail() {
     return speed * (baseInterval / avgSpawn);
   };
 
-  // Calculate adjusted score (accuracy normalized by difficulty)
-  const calculateAdjustedScore = (session) => {
-    const accuracy = session.fishAccuracy || 0;
-    const difficulty = calculateDifficulty(session);
-    return accuracy * difficulty;
-  };
-
   // Group sessions by time period
   const groupSessionsByTime = (sessionsData, grouping) => {
     if (grouping === 'session') {
@@ -238,7 +232,6 @@ export default function ChildDetail() {
       const sessions = group.sessions;
       const avgAccuracy = sessions.reduce((sum, s) => sum + (s.fishAccuracy || 0), 0) / sessions.length;
       const avgDifficulty = sessions.reduce((sum, s) => sum + calculateDifficulty(s), 0) / sessions.length;
-      const avgAdjustedScore = sessions.reduce((sum, s) => sum + calculateAdjustedScore(s), 0) / sessions.length;
       const avgReactionTime = sessions.reduce((sum, s) => sum + (s.averageReactionTime || 0), 0) / sessions.length;
       const avgSpeed = sessions.reduce((sum, s) => sum + (s.gameSettings?.speedMultiplier || 1), 0) / sessions.length;
       const avgMinSpawn = sessions.reduce((sum, s) => sum + (s.gameSettings?.minSpawnInterval || 3), 0) / sessions.length;
@@ -249,7 +242,6 @@ export default function ChildDetail() {
         label: group.label,
         accuracy: avgAccuracy,
         difficulty: avgDifficulty,
-        adjustedScore: avgAdjustedScore,
         reactionTime: avgReactionTime,
         speed: avgSpeed,
         minSpawnInterval: avgMinSpawn,
@@ -260,9 +252,18 @@ export default function ChildDetail() {
   };
 
   // Get chart data based on time grouping
+  const filteredSessions = sessions.filter((session) => {
+    if (handFilter === 'hand') return session.handTrackingUsed === true;
+    if (handFilter === 'no-hand') return session.handTrackingUsed !== true;
+    return true;
+  });
+
   const getChartData = () => {
-    if (!sessions.length) return null;
-    const groups = groupSessionsByTime(sessions, timeGrouping);
+    if (!filteredSessions.length) return null;
+    const orderedSessions = [...filteredSessions].sort(
+      (a, b) => new Date(a.sessionStartTime) - new Date(b.sessionStartTime)
+    );
+    const groups = groupSessionsByTime(orderedSessions, timeGrouping);
     return aggregateGroupedData(groups);
   };
 
@@ -298,7 +299,7 @@ export default function ChildDetail() {
     },
   };
 
-  // Dual Y-axis chart options for accuracy/difficulty/adjusted score
+  // Chart options for accuracy/difficulty
   const accuracyChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -309,9 +310,6 @@ export default function ChildDetail() {
     },
     scales: {
       y: {
-        type: 'linear',
-        display: true,
-        position: 'left',
         beginAtZero: true,
         max: 100,
         title: {
@@ -324,13 +322,13 @@ export default function ChildDetail() {
         display: true,
         position: 'right',
         beginAtZero: true,
-        max: 200,
+        max: 3,
         grid: {
           drawOnChartArea: false,
         },
         title: {
           display: true,
-          text: 'Difficulty / Adj. Score',
+          text: 'Difficulty',
         },
       },
     },
@@ -387,7 +385,6 @@ export default function ChildDetail() {
             backgroundColor: 'rgba(0, 188, 212, 0.1)',
             fill: true,
             tension: 0.4,
-            yAxisID: 'y',
           },
           {
             label: 'Difficulty',
@@ -397,22 +394,6 @@ export default function ChildDetail() {
             fill: false,
             tension: 0.4,
             yAxisID: 'y1',
-          },
-          {
-            label: 'Adjusted Score %',
-            data: chartData.map((d) => {
-              // PFF-style: adjust based on deviation from baseline difficulty
-              const baselineDifficulty = 1.0;
-              const maxDifficulty = 2.5;
-              const difficultyDelta = (d.difficulty - baselineDifficulty) / (maxDifficulty - baselineDifficulty);
-              const adjustmentFactor = 1 + (difficultyDelta * 0.2); // ±20% adjustment
-              return Math.min(d.accuracy * adjustmentFactor, 100);
-            }),
-            borderColor: '#4caf50',
-            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-            fill: false,
-            tension: 0.4,
-            yAxisID: 'y',
           },
         ],
       }
@@ -635,6 +616,7 @@ export default function ChildDetail() {
                 >
                   <option value="Left">Left</option>
                   <option value="Right">Right</option>
+                  <option value="Random">Random</option>
                 </select>
               </div>
 
@@ -969,28 +951,40 @@ export default function ChildDetail() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {sessions.length > 0 ? (
-              <>
-                {/* Time Grouping Selector */}
-                <div className="time-grouping-selector">
-                  <span className="grouping-label">Group by:</span>
-                  <div className="grouping-buttons">
-                    {['session', 'daily', 'weekly', 'monthly'].map((group) => (
-                      <button
-                        key={group}
-                        className={`grouping-btn ${timeGrouping === group ? 'active' : ''}`}
-                        onClick={() => setTimeGrouping(group)}
-                      >
-                        {group.charAt(0).toUpperCase() + group.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            {/* Time Grouping + Hand Filter */}
+            <div className="time-grouping-selector">
+              <span className="grouping-label">Group by:</span>
+              <div className="grouping-buttons">
+                {['session', 'daily', 'weekly', 'monthly'].map((group) => (
+                  <button
+                    key={group}
+                    className={`grouping-btn ${timeGrouping === group ? 'active' : ''}`}
+                    onClick={() => setTimeGrouping(group)}
+                    disabled={filteredSessions.length === 0}
+                  >
+                    {group.charAt(0).toUpperCase() + group.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <div className="grouping-filter">
+                <span className="grouping-label">Hand:</span>
+                <select
+                  className="form-select"
+                  value={handFilter}
+                  onChange={(e) => setHandFilter(e.target.value)}
+                >
+                  <option value="all">All</option>
+                  <option value="hand">Hand On</option>
+                  <option value="no-hand">Hand Off</option>
+                </select>
+              </div>
+            </div>
 
+            {filteredSessions.length > 0 ? (
+              <>
                 <div className="charts-grid">
                   <div className="chart-card card">
-                    <h3>Accuracy, Difficulty & Adjusted Score</h3>
-                    <p className="chart-hint">Adjusted Score = Accuracy × Difficulty / 100</p>
+                    <h3>Accuracy & Difficulty Over Time</h3>
                     <div className="chart-container">
                       <Line data={progressChartData} options={accuracyChartOptions} />
                     </div>
@@ -1049,7 +1043,20 @@ export default function ChildDetail() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {sessions.length > 0 ? (
+            <div className="sessions-filter-row">
+              <span className="grouping-label">Hand:</span>
+              <select
+                className="form-select"
+                value={handFilter}
+                onChange={(e) => setHandFilter(e.target.value)}
+              >
+                <option value="all">All</option>
+                <option value="hand">Hand On</option>
+                <option value="no-hand">Hand Off</option>
+              </select>
+            </div>
+
+            {filteredSessions.length > 0 ? (
               <div className="table-container">
                 <table className="table">
                   <thead>
@@ -1060,7 +1067,6 @@ export default function ChildDetail() {
                       <th>Hand</th>
                       <th>Accuracy</th>
                       <th>Difficulty</th>
-                      <th>Adj. Score</th>
                       <th>Correct</th>
                       <th>Wrong</th>
                       <th>Missed</th>
@@ -1070,7 +1076,7 @@ export default function ChildDetail() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sessions.map((session) => (
+                    {filteredSessions.map((session) => (
                       <tr key={session._id}>
                         <td>{formatDate(session.sessionStartTime)}</td>
                         <td>{formatDuration(session.sessionDuration)}</td>
@@ -1090,11 +1096,7 @@ export default function ChildDetail() {
                         </td>
                         <td>
                           <span className="badge badge-info">
-                            {session.handTrackingUsed === true
-                              ? 'Yes'
-                              : session.handTrackingUsed === false
-                              ? 'No'
-                              : '—'}
+                            {session.handTrackingUsed === true ? 'Yes' : 'No'}
                           </span>
                         </td>
                         <td>
@@ -1113,11 +1115,6 @@ export default function ChildDetail() {
                         <td>
                           <span className="badge badge-info">
                             {calculateDifficulty(session).toFixed(2)}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="badge badge-primary">
-                            {calculateAdjustedScore(session).toFixed(2)}
                           </span>
                         </td>
                         <td className="text-success">{session.correctFish || 0}</td>
@@ -1350,6 +1347,17 @@ export default function ChildDetail() {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           gap: 1.5rem;
+        }
+
+        .grouping-filter,
+        .sessions-filter-row {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .sessions-filter-row {
+          margin-bottom: 0.75rem;
         }
 
         .settings-section {

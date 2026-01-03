@@ -18,6 +18,7 @@ public class Login : MonoBehaviour
     public MenuFishSpawner menuFishSpawner;
     public GameSettings gameSettings;
     public HandTrackingCatcher handTrackingCatcher;
+    public AudioManager audioManager;
 
     // UI references
     private VisualElement loginView;
@@ -53,6 +54,14 @@ public class Login : MonoBehaviour
     private Label speedValue;
     private Label minSpawnValue;
     private Label maxSpawnValue;
+    private Slider musicVolumeSlider;
+    private Label musicVolumeValue;
+    private Slider correctFishVolumeSlider;
+    private Label correctFishVolumeValue;
+    private Slider wrongFishVolumeSlider;
+    private Label wrongFishVolumeValue;
+    private Slider menuVolumeSlider;
+    private Label menuVolumeValue;
     private Toggle useHandTrackingToggle;
     private DropdownField handIndexDropdown;
     private Slider movementSensitivitySlider;
@@ -168,6 +177,14 @@ public class Login : MonoBehaviour
         grabThresholdValue = root.Q<Label>("grabThresholdValue");
         jointSizeSlider = root.Q<Slider>("jointSizeSlider");
         jointSizeValue = root.Q<Label>("jointSizeValue");
+        musicVolumeSlider = root.Q<Slider>("musicVolumeSlider");
+        musicVolumeValue = root.Q<Label>("musicVolumeValue");
+        correctFishVolumeSlider = root.Q<Slider>("correctFishVolumeSlider");
+        correctFishVolumeValue = root.Q<Label>("correctFishVolumeValue");
+        wrongFishVolumeSlider = root.Q<Slider>("wrongFishVolumeSlider");
+        wrongFishVolumeValue = root.Q<Label>("wrongFishVolumeValue");
+        menuVolumeSlider = root.Q<Slider>("menuVolumeSlider");
+        menuVolumeValue = root.Q<Label>("menuVolumeValue");
         var btnSaveSettings = root.Q<Button>("btnSaveSettings");
         var btnCloseSettings = root.Q<Button>("btnCloseSettings");
 
@@ -202,6 +219,10 @@ public class Login : MonoBehaviour
         if (cursorSizeSlider != null) { cursorSizeSlider.UnregisterValueChangedCallback(OnCursorSizeChanged); cursorSizeSlider.RegisterValueChangedCallback(OnCursorSizeChanged); }
         if (grabThresholdSlider != null) { grabThresholdSlider.UnregisterValueChangedCallback(OnGrabThresholdChanged); grabThresholdSlider.RegisterValueChangedCallback(OnGrabThresholdChanged); }
         if (jointSizeSlider != null) { jointSizeSlider.UnregisterValueChangedCallback(OnJointSizeChanged); jointSizeSlider.RegisterValueChangedCallback(OnJointSizeChanged); }
+        if (musicVolumeSlider != null) { musicVolumeSlider.UnregisterValueChangedCallback(OnMusicVolumeChanged); musicVolumeSlider.RegisterValueChangedCallback(OnMusicVolumeChanged); }
+        if (correctFishVolumeSlider != null) { correctFishVolumeSlider.UnregisterValueChangedCallback(OnCorrectFishVolumeChanged); correctFishVolumeSlider.RegisterValueChangedCallback(OnCorrectFishVolumeChanged); }
+        if (wrongFishVolumeSlider != null) { wrongFishVolumeSlider.UnregisterValueChangedCallback(OnWrongFishVolumeChanged); wrongFishVolumeSlider.RegisterValueChangedCallback(OnWrongFishVolumeChanged); }
+        if (menuVolumeSlider != null) { menuVolumeSlider.UnregisterValueChangedCallback(OnMenuVolumeChanged); menuVolumeSlider.RegisterValueChangedCallback(OnMenuVolumeChanged); }
         if (btnSaveSettings != null) { btnSaveSettings.clicked -= OnSaveSettings; btnSaveSettings.clicked += OnSaveSettings; }
         if (btnCloseSettings != null) { btnCloseSettings.clicked -= OnCloseSettings; btnCloseSettings.clicked += OnCloseSettings; }
 
@@ -214,7 +235,7 @@ public class Login : MonoBehaviour
         // Setup spawn dropdown
         if (spawnDropdown != null)
         {
-            spawnDropdown.choices = new List<string> { "Left", "Right" };
+            spawnDropdown.choices = new List<string> { "Left", "Right", "Random" };
             spawnDropdown.value = "Right";
         }
 
@@ -243,6 +264,11 @@ public class Login : MonoBehaviour
             handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
         }
 
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+
         ShowLogin();
     }
 
@@ -251,6 +277,7 @@ public class Login : MonoBehaviour
     // --------------------------------------------------
     void ShowLogin()
     {
+        PlayMenuSound();
         loginView?.RemoveFromClassList("hidden");
         registerView?.AddToClassList("hidden");
         welcomeView?.AddToClassList("hidden");
@@ -260,6 +287,7 @@ public class Login : MonoBehaviour
 
     void ShowRegister()
     {
+        PlayMenuSound();
         loginView?.AddToClassList("hidden");
         registerView?.RemoveFromClassList("hidden");
         welcomeView?.AddToClassList("hidden");
@@ -286,6 +314,7 @@ public class Login : MonoBehaviour
     // --------------------------------------------------
     void OnLoginClicked()
     {
+        PlayMenuSound();
         if (string.IsNullOrEmpty(loginUsername.value))
         {
             Debug.Log("Login failed: Username empty");
@@ -393,6 +422,7 @@ public class Login : MonoBehaviour
     // --------------------------------------------------
     void OnRegisterClicked()
     {
+        PlayMenuSound();
         if (string.IsNullOrEmpty(regUsername.value) ||
             string.IsNullOrEmpty(regFirstName.value) ||
             string.IsNullOrEmpty(regLastName.value) ||
@@ -477,6 +507,7 @@ public class Login : MonoBehaviour
 
     void OnStartPlaying()
     {
+        PlayMenuSound();
         Debug.Log("Start Playing clicked - fetching latest settings...");
         StartCoroutine(StartPlayingWithFreshSettings());
     }
@@ -530,6 +561,7 @@ public class Login : MonoBehaviour
 
     void OnLogout()
     {
+        PlayMenuSound();
         Debug.Log("Logout clicked");
 
         // Stop polling when logging out
@@ -548,6 +580,7 @@ public class Login : MonoBehaviour
     // --------------------------------------------------
     void OnOpenSettings()
     {
+        PlayMenuSound();
         // Hide all other views when opening settings from welcome menu
         if (loginView != null) loginView.AddToClassList("hidden");
         if (registerView != null) registerView.AddToClassList("hidden");
@@ -583,7 +616,11 @@ public class Login : MonoBehaviour
 
         if (spawnDropdown != null)
         {
-            spawnDropdown.value = gameSettings.spawnFrom == GameSettings.SpawnSide.Left ? "Left" : "Right";
+            spawnDropdown.value = gameSettings.spawnFrom == GameSettings.SpawnSide.Left
+                ? "Left"
+                : gameSettings.spawnFrom == GameSettings.SpawnSide.Right
+                ? "Right"
+                : "Random";
         }
 
         if (targetFishDropdown != null)
@@ -700,6 +737,52 @@ public class Login : MonoBehaviour
             }
         }
 
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+
+        if (musicVolumeSlider != null)
+        {
+            float value = audioManager != null ? audioManager.GetMusicVolume() : 0.6f;
+            musicVolumeSlider.value = value;
+            if (musicVolumeValue != null)
+            {
+                musicVolumeValue.text = $"{value:F2}";
+            }
+        }
+
+        if (correctFishVolumeSlider != null)
+        {
+            float value = audioManager != null ? audioManager.GetCorrectFishVolume() : 1f;
+            correctFishVolumeSlider.value = value;
+            if (correctFishVolumeValue != null)
+            {
+                correctFishVolumeValue.text = $"{value:F2}";
+            }
+        }
+
+        if (wrongFishVolumeSlider != null)
+        {
+            float value = audioManager != null ? audioManager.GetWrongFishVolume() : 1f;
+            wrongFishVolumeSlider.value = value;
+            if (wrongFishVolumeValue != null)
+            {
+                wrongFishVolumeValue.text = $"{value:F2}";
+            }
+        }
+
+        if (menuVolumeSlider != null)
+        {
+            float value = audioManager != null ? audioManager.GetMenuVolume() : 0.8f;
+            menuVolumeSlider.value = value;
+            if (menuVolumeValue != null)
+            {
+                menuVolumeValue.text = $"{value:F2}";
+            }
+        }
+
+
         UpdateHandTrackingControlStates();
     }
 
@@ -776,6 +859,39 @@ public class Login : MonoBehaviour
         }
     }
 
+    void OnMusicVolumeChanged(ChangeEvent<float> evt)
+    {
+        if (musicVolumeValue != null)
+        {
+            musicVolumeValue.text = $"{evt.newValue:F2}";
+        }
+    }
+
+    void OnCorrectFishVolumeChanged(ChangeEvent<float> evt)
+    {
+        if (correctFishVolumeValue != null)
+        {
+            correctFishVolumeValue.text = $"{evt.newValue:F2}";
+        }
+    }
+
+    void OnWrongFishVolumeChanged(ChangeEvent<float> evt)
+    {
+        if (wrongFishVolumeValue != null)
+        {
+            wrongFishVolumeValue.text = $"{evt.newValue:F2}";
+        }
+    }
+
+    void OnMenuVolumeChanged(ChangeEvent<float> evt)
+    {
+        if (menuVolumeValue != null)
+        {
+            menuVolumeValue.text = $"{evt.newValue:F2}";
+        }
+    }
+
+
     void UpdateHandTrackingControlStates()
     {
         bool trackingEnabled = useHandTrackingToggle == null || useHandTrackingToggle.value;
@@ -832,13 +948,24 @@ public class Login : MonoBehaviour
 
     void OnSaveSettings()
     {
+        PlayMenuSound();
         if (gameSettings == null) return;
 
         gameSettings.speedMultiplier = speedSlider.value;
         gameSettings.minSpawnInterval = minSpawnSlider.value;
         gameSettings.maxSpawnInterval = maxSpawnSlider.value;
-        gameSettings.spawnFrom = spawnDropdown.value == "Left" ?
-            GameSettings.SpawnSide.Left : GameSettings.SpawnSide.Right;
+        if (spawnDropdown.value == "Left")
+        {
+            gameSettings.spawnFrom = GameSettings.SpawnSide.Left;
+        }
+        else if (spawnDropdown.value == "Right")
+        {
+            gameSettings.spawnFrom = GameSettings.SpawnSide.Right;
+        }
+        else
+        {
+            gameSettings.spawnFrom = GameSettings.SpawnSide.Random;
+        }
 
         // Save target fish mode
         switch (targetFishDropdown.value)
@@ -895,6 +1022,21 @@ public class Login : MonoBehaviour
             );
         }
 
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+
+        if (audioManager != null)
+        {
+            audioManager.ApplyVolumeSettings(
+                musicVolumeSlider != null ? musicVolumeSlider.value : 0.6f,
+                correctFishVolumeSlider != null ? correctFishVolumeSlider.value : 1f,
+                wrongFishVolumeSlider != null ? wrongFishVolumeSlider.value : 1f,
+                menuVolumeSlider != null ? menuVolumeSlider.value : 0.8f
+            );
+        }
+
         // Save settings directly to backend
         StartCoroutine(SaveSettingsToBackend());
 
@@ -943,7 +1085,11 @@ public class Login : MonoBehaviour
             showGrabCursor = showGrabCursorToggle == null || showGrabCursorToggle.value,
             cursorSize = cursorSizeSlider != null ? cursorSizeSlider.value : 3f,
             grabThreshold = grabThresholdSlider != null ? grabThresholdSlider.value : 0.6f,
-            jointSize = jointSizeSlider != null ? jointSizeSlider.value : 7f
+            jointSize = jointSizeSlider != null ? jointSizeSlider.value : 7f,
+            musicVolume = musicVolumeSlider != null ? musicVolumeSlider.value : 0.6f,
+            correctFishVolume = correctFishVolumeSlider != null ? correctFishVolumeSlider.value : 1f,
+            wrongFishVolume = wrongFishVolumeSlider != null ? wrongFishVolumeSlider.value : 1f,
+            menuVolume = menuVolumeSlider != null ? menuVolumeSlider.value : 0.8f
         };
 
         string json = JsonUtility.ToJson(dto);
@@ -968,6 +1114,7 @@ public class Login : MonoBehaviour
 
     void OnCloseSettings()
     {
+        PlayMenuSound();
         if (settingsPanel != null)
             settingsPanel.AddToClassList("hidden");
 
@@ -997,6 +1144,16 @@ public class Login : MonoBehaviour
         }
 
         return 0;
+    }
+
+    void PlayMenuSound()
+    {
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+
+        audioManager?.PlayMenuClick();
     }
 
     // --------------------------------------------------
@@ -1039,6 +1196,7 @@ public class Login : MonoBehaviour
 
     void OnContinue()
     {
+        PlayMenuSound();
         // Find PauseMenuController and call Resume to sync state
         PauseMenuController pauseController = FindFirstObjectByType<PauseMenuController>();
         if (pauseController != null)
@@ -1055,6 +1213,7 @@ public class Login : MonoBehaviour
 
     void OnPauseSettingsClicked()
     {
+        PlayMenuSound();
         // Hide pause menu when opening settings from pause
         if (pauseMenu == null && uiDocument != null)
             pauseMenu = uiDocument.rootVisualElement?.Q<VisualElement>("pauseMenu");
@@ -1076,6 +1235,7 @@ public class Login : MonoBehaviour
 
     void OnSaveAndEnd()
     {
+        PlayMenuSound();
         if (SessionStats.Instance != null)
             SessionStats.Instance.EndSession();
 
@@ -1090,6 +1250,7 @@ public class Login : MonoBehaviour
 
     void OnReturnToMenu()
     {
+        PlayMenuSound();
         // End current session without uploading (user chose to return)
         if (SessionStats.Instance != null)
             SessionStats.Instance.EndSession();
@@ -1101,6 +1262,7 @@ public class Login : MonoBehaviour
 
     void OnQuitGame()
     {
+        PlayMenuSound();
         Debug.Log("Quitting game...");
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

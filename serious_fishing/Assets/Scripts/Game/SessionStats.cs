@@ -154,7 +154,10 @@ public class SessionStats : MonoBehaviour
 
         if (hitFish)
         {
-            reactionTimes.Add(reactionTime);
+            if (isCorrect)
+            {
+                reactionTimes.Add(reactionTime);
+            }
             clickResults.Add(isCorrect); // Track result for this click
 
             // Record quadrant accuracy

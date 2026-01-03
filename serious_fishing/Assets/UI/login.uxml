@@ -100,6 +100,40 @@
                 <ui:DropdownField name="targetFishDropdown" class="settings-dropdown" />
             </ui:VisualElement>
 
+            <ui:Label text="SOUND SETTINGS" class="settings-subtitle" />
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Music Volume:" class="settings-label" />
+                    <ui:Label text="0.60" name="musicVolumeValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="musicVolumeSlider" low-value="0" high-value="1" value="0.6" class="settings-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Correct Fish Volume:" class="settings-label" />
+                    <ui:Label text="1.00" name="correctFishVolumeValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="correctFishVolumeSlider" low-value="0" high-value="1" value="1" class="settings-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Wrong Fish Volume:" class="settings-label" />
+                    <ui:Label text="1.00" name="wrongFishVolumeValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="wrongFishVolumeSlider" low-value="0" high-value="1" value="1" class="settings-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Menu Sound Volume:" class="settings-label" />
+                    <ui:Label text="0.80" name="menuVolumeValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="menuVolumeSlider" low-value="0" high-value="1" value="0.8" class="settings-slider" />
+            </ui:VisualElement>
+
             <ui:Label text="HAND TRACKING" class="settings-subtitle" />
 
             <ui:VisualElement class="settings-group">

@@ -11,6 +11,9 @@ public class GameSettingsManager : MonoBehaviour
     [Header("Hand Tracking")]
     [SerializeField] private HandTrackingCatcher handTrackingCatcher;
 
+    [Header("Audio")]
+    [SerializeField] private AudioManager audioManager;
+
     [Header("Backend")]
     public string backendBaseUrl = "http://127.0.0.1:5001";
 
@@ -39,6 +42,11 @@ public class GameSettingsManager : MonoBehaviour
         if (handTrackingCatcher == null)
         {
             handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
+        }
+
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
         }
     }
 
@@ -214,7 +222,11 @@ public class GameSettingsManager : MonoBehaviour
             showGrabCursor = handTrackingCatcher != null && handTrackingCatcher.GetShowGrabCursor(),
             cursorSize = handTrackingCatcher != null ? handTrackingCatcher.GetCursorSize() : 3f,
             grabThreshold = handTrackingCatcher != null ? handTrackingCatcher.GetGrabThreshold() : 0.6f,
-            jointSize = handTrackingCatcher != null ? handTrackingCatcher.GetJointSize() : 7f
+            jointSize = handTrackingCatcher != null ? handTrackingCatcher.GetJointSize() : 7f,
+            musicVolume = audioManager != null ? audioManager.GetMusicVolume() : 0.6f,
+            correctFishVolume = audioManager != null ? audioManager.GetCorrectFishVolume() : 1f,
+            wrongFishVolume = audioManager != null ? audioManager.GetWrongFishVolume() : 1f,
+            menuVolume = audioManager != null ? audioManager.GetMenuVolume() : 0.8f
         };
 
         string json = JsonUtility.ToJson(dto);
@@ -259,10 +271,18 @@ public class GameSettingsManager : MonoBehaviour
         gameSettings.minSpawnInterval = dto.minSpawnInterval;
         gameSettings.maxSpawnInterval = dto.maxSpawnInterval;
 
-        gameSettings.spawnFrom =
-            dto.spawnFrom == "Left"
-                ? GameSettings.SpawnSide.Left
-                : GameSettings.SpawnSide.Right;
+        if (dto.spawnFrom == "Left")
+        {
+            gameSettings.spawnFrom = GameSettings.SpawnSide.Left;
+        }
+        else if (dto.spawnFrom == "Right")
+        {
+            gameSettings.spawnFrom = GameSettings.SpawnSide.Right;
+        }
+        else
+        {
+            gameSettings.spawnFrom = GameSettings.SpawnSide.Random;
+        }
 
         // Apply target fish mode
         switch (dto.targetFishMode)
@@ -314,6 +334,21 @@ public class GameSettingsManager : MonoBehaviour
                 dto.cursorSize,
                 dto.grabThreshold,
                 dto.jointSize
+            );
+        }
+
+        if (audioManager == null)
+        {
+            audioManager = FindFirstObjectByType<AudioManager>();
+        }
+
+        if (audioManager != null)
+        {
+            audioManager.ApplyVolumeSettings(
+                dto.musicVolume,
+                dto.correctFishVolume,
+                dto.wrongFishVolume,
+                dto.menuVolume
             );
         }
     }
