@@ -14,7 +14,7 @@ public class HandTrackingCatcher : MonoBehaviour
     [Header("Hand Skeleton")]
     [SerializeField] private bool showHandSkeleton = true; // Toggle hand skeleton on/off
     [SerializeField] private bool normalizeHandSize = true; // Keep hand same size regardless of distance
-    [SerializeField] [Range(1f, 20f)] private float handSize = 5f; // Target hand size (wrist to middle finger)
+    [SerializeField] [Range(0f, 100f)] private float handSize = 5f; // Target hand size (wrist to middle finger)
     [SerializeField] private float jointSize = 7f; // Size of joint circles
     [SerializeField] private float lineWidth = 1f; // Width of bone lines
     [SerializeField] private Color handOpenColor = Color.white; // Hand skeleton color when open
@@ -22,12 +22,12 @@ public class HandTrackingCatcher : MonoBehaviour
 
     [Header("Grab Cursor")]
     [SerializeField] private bool showGrabCursor = true; // Toggle grab cursor on/off
-    [SerializeField] [Range(1f, 100f)] private float cursorSize = 3f; // Size of the grab cursor
+    [SerializeField] [Range(1f, 100f)] private float cursorSize = 3f; // Size of the grab cursor (also used as catch radius)
     [SerializeField] private Color cursorOpenColor = Color.yellow; // Cursor color when hand is open
     [SerializeField] private Color cursorClosedColor = Color.green; // Cursor color when grabbing
 
     [Header("Grab Detection")]
-    [SerializeField] private float grabThreshold = 0.6f; // How closed the hand needs to be (0-1)
+    [SerializeField] [Range(0f, 1f)] private float grabThreshold = 0.6f; // How closed the hand needs to be (0-1)
     [SerializeField] private float catchCooldown = 0.5f; // Prevent double catches
 
     // Catch radius matches cursor size
@@ -41,6 +41,7 @@ public class HandTrackingCatcher : MonoBehaviour
     private Vector2 palmWorldPos; // Palm center position for grabbing
     private Vector3[] currentWorldPositions = new Vector3[21];
     private bool handDetected = false;
+    private bool handEverDetected = false;
     private bool isGrabbing = false;
     private bool wasGrabbing = false; // For detecting grab moment
     private float lastCatchTime = 0f;
@@ -235,6 +236,7 @@ public class HandTrackingCatcher : MonoBehaviour
         }
 
         handDetected = true;
+        handEverDetected = true;
 
         // Get the specified hand's landmarks
         if (handIndexToUse < result.handLandmarks.Count)
@@ -468,7 +470,17 @@ public class HandTrackingCatcher : MonoBehaviour
 
         if (shouldProcess)
         {
-            ProcessHandLandmarks(resultToProcess);
+            if (useHandTracking)
+            {
+                ProcessHandLandmarks(resultToProcess);
+            }
+            else
+            {
+                handDetected = false;
+                isGrabbing = false;
+                if (handVisualization != null) handVisualization.SetActive(false);
+                if (grabCursor != null) grabCursor.SetActive(false);
+            }
         }
 
         if (!useHandTracking || !handDetected || Time.timeScale == 0f)
@@ -573,11 +585,122 @@ public class HandTrackingCatcher : MonoBehaviour
         {
             handVisualization.SetActive(false);
         }
+        if (!use && grabCursor != null)
+        {
+            grabCursor.SetActive(false);
+        }
+    }
+
+    public void ApplySettings(
+        bool useTracking,
+        int handIndex,
+        float sensitivity,
+        bool showSkeleton,
+        bool normalizeSize,
+        float size,
+        bool showCursor,
+        float newCursorSize,
+        float newGrabThreshold,
+        float newJointSize
+    )
+    {
+        useHandTracking = useTracking;
+        handIndexToUse = Mathf.Max(0, handIndex);
+        movementSensitivity = Mathf.Max(0f, sensitivity);
+        showHandSkeleton = showSkeleton;
+        normalizeHandSize = normalizeSize;
+        handSize = Mathf.Clamp(size, 0f, 100f);
+        showGrabCursor = showCursor;
+        cursorSize = Mathf.Clamp(newCursorSize, 1f, 100f);
+        grabThreshold = Mathf.Clamp01(newGrabThreshold);
+        jointSize = Mathf.Max(0f, newJointSize);
+
+        if (!useHandTracking)
+        {
+            if (handVisualization != null) handVisualization.SetActive(false);
+            if (grabCursor != null) grabCursor.SetActive(false);
+            handDetected = false;
+            isGrabbing = false;
+            wasGrabbing = false;
+        }
+        else
+        {
+            if (!showHandSkeleton && handVisualization != null) handVisualization.SetActive(false);
+            if (!showGrabCursor && grabCursor != null) grabCursor.SetActive(false);
+            handDetected = false;
+            isGrabbing = false;
+            wasGrabbing = false;
+        }
+
+        if (grabCursor != null)
+        {
+            grabCursor.transform.localScale = Vector3.one * cursorSize;
+        }
+    }
+
+    public void ResetHandTrackingUsage()
+    {
+        handEverDetected = false;
+    }
+
+    public bool WasHandTrackingUsed()
+    {
+        return handEverDetected;
     }
 
     public bool IsHandDetected()
     {
         return handDetected;
+    }
+
+    public bool IsHandTrackingEnabled()
+    {
+        return useHandTracking;
+    }
+
+    public int GetHandIndexToUse()
+    {
+        return handIndexToUse;
+    }
+
+    public float GetMovementSensitivity()
+    {
+        return movementSensitivity;
+    }
+
+    public bool GetShowHandSkeleton()
+    {
+        return showHandSkeleton;
+    }
+
+    public bool GetNormalizeHandSize()
+    {
+        return normalizeHandSize;
+    }
+
+    public float GetHandSize()
+    {
+        return handSize;
+    }
+
+    public bool GetShowGrabCursor()
+    {
+        return showGrabCursor;
+    }
+
+    public float GetCursorSize()
+    {
+        return cursorSize;
+    }
+
+    public float GetGrabThreshold()
+    {
+        return grabThreshold;
+    }
+
+    public float GetJointSize()
+    {
+        return jointSize;
     }
 
     public bool IsGrabbing()

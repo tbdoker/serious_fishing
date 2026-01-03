@@ -24,6 +24,25 @@ users_col = db["users"]
 settings_col = db["game_settings"]
 sessions_col = db["sessions"]
 
+# Default per-user game + hand tracking settings
+DEFAULT_GAME_SETTINGS = {
+    "speedMultiplier": 1.0,
+    "minSpawnInterval": 3.0,
+    "maxSpawnInterval": 6.0,
+    "spawnFrom": "Right",
+    "targetFishMode": "Random",
+    "useHandTracking": True,
+    "handIndexToUse": 0,
+    "movementSensitivity": 1.5,
+    "showHandSkeleton": True,
+    "normalizeHandSize": True,
+    "handSize": 5.0,
+    "showGrabCursor": True,
+    "cursorSize": 3.0,
+    "grabThreshold": 0.6,
+    "jointSize": 7.0
+}
+
 # ----------------------------
 # HELPERS
 # ----------------------------
@@ -105,11 +124,7 @@ def register():
         settings_col.insert_one({
             "userId": user_id,
             "username": data["username"],
-            "speedMultiplier": 1.0,
-            "minSpawnInterval": 3.0,
-            "maxSpawnInterval": 6.0,
-            "spawnFrom": "Right",
-            "targetFishMode": "Random"
+            **DEFAULT_GAME_SETTINGS
         })
 
     return jsonify({
@@ -147,11 +162,7 @@ def login():
             settings_col.insert_one({
                 "userId": user_id,
                 "username": user["username"],
-                "speedMultiplier": 1.0,
-                "minSpawnInterval": 3.0,
-                "maxSpawnInterval": 6.0,
-                "spawnFrom": "Right",
-                "targetFishMode": "Random"
+                **DEFAULT_GAME_SETTINGS
             })
 
     return jsonify({
@@ -316,11 +327,21 @@ def get_therapist_children():
             "lastSession": latest_session["sessionStartTime"] if latest_session else None,
             "lastAccuracy": latest_session.get("fishAccuracy", 0) if latest_session else None,
             "settings": {
-                "speedMultiplier": settings.get("speedMultiplier", 1.0) if settings else 1.0,
-                "minSpawnInterval": settings.get("minSpawnInterval", 3.0) if settings else 3.0,
-                "maxSpawnInterval": settings.get("maxSpawnInterval", 6.0) if settings else 6.0,
-                "spawnFrom": settings.get("spawnFrom", "Right") if settings else "Right",
-                "targetFishMode": settings.get("targetFishMode", "Random") if settings else "Random"
+                "speedMultiplier": settings.get("speedMultiplier", DEFAULT_GAME_SETTINGS["speedMultiplier"]) if settings else DEFAULT_GAME_SETTINGS["speedMultiplier"],
+                "minSpawnInterval": settings.get("minSpawnInterval", DEFAULT_GAME_SETTINGS["minSpawnInterval"]) if settings else DEFAULT_GAME_SETTINGS["minSpawnInterval"],
+                "maxSpawnInterval": settings.get("maxSpawnInterval", DEFAULT_GAME_SETTINGS["maxSpawnInterval"]) if settings else DEFAULT_GAME_SETTINGS["maxSpawnInterval"],
+                "spawnFrom": settings.get("spawnFrom", DEFAULT_GAME_SETTINGS["spawnFrom"]) if settings else DEFAULT_GAME_SETTINGS["spawnFrom"],
+                "targetFishMode": settings.get("targetFishMode", DEFAULT_GAME_SETTINGS["targetFishMode"]) if settings else DEFAULT_GAME_SETTINGS["targetFishMode"],
+                "useHandTracking": settings.get("useHandTracking", DEFAULT_GAME_SETTINGS["useHandTracking"]) if settings else DEFAULT_GAME_SETTINGS["useHandTracking"],
+                "handIndexToUse": settings.get("handIndexToUse", DEFAULT_GAME_SETTINGS["handIndexToUse"]) if settings else DEFAULT_GAME_SETTINGS["handIndexToUse"],
+                "movementSensitivity": settings.get("movementSensitivity", DEFAULT_GAME_SETTINGS["movementSensitivity"]) if settings else DEFAULT_GAME_SETTINGS["movementSensitivity"],
+                "showHandSkeleton": settings.get("showHandSkeleton", DEFAULT_GAME_SETTINGS["showHandSkeleton"]) if settings else DEFAULT_GAME_SETTINGS["showHandSkeleton"],
+                "normalizeHandSize": settings.get("normalizeHandSize", DEFAULT_GAME_SETTINGS["normalizeHandSize"]) if settings else DEFAULT_GAME_SETTINGS["normalizeHandSize"],
+                "handSize": settings.get("handSize", DEFAULT_GAME_SETTINGS["handSize"]) if settings else DEFAULT_GAME_SETTINGS["handSize"],
+                "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]) if settings else DEFAULT_GAME_SETTINGS["showGrabCursor"],
+                "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]) if settings else DEFAULT_GAME_SETTINGS["cursorSize"],
+                "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]) if settings else DEFAULT_GAME_SETTINGS["grabThreshold"],
+                "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]) if settings else DEFAULT_GAME_SETTINGS["jointSize"]
             }
         })
 
@@ -364,11 +385,7 @@ def add_child():
     settings_col.insert_one({
         "userId": child_id,
         "username": data["username"],
-        "speedMultiplier": 1.0,
-        "minSpawnInterval": 3.0,
-        "maxSpawnInterval": 6.0,
-        "spawnFrom": "Right",
-        "targetFishMode": "Random"
+        **DEFAULT_GAME_SETTINGS
     })
 
     return jsonify({
@@ -421,11 +438,21 @@ def get_child_details(child_id):
             "createdAt": child.get("createdAt", "").isoformat() if child.get("createdAt") else None,
             "sessionCount": session_count,
             "settings": {
-                "speedMultiplier": settings.get("speedMultiplier", 1.0) if settings else 1.0,
-                "minSpawnInterval": settings.get("minSpawnInterval", 3.0) if settings else 3.0,
-                "maxSpawnInterval": settings.get("maxSpawnInterval", 6.0) if settings else 6.0,
-                "spawnFrom": settings.get("spawnFrom", "Right") if settings else "Right",
-                "targetFishMode": settings.get("targetFishMode", "Random") if settings else "Random"
+                "speedMultiplier": settings.get("speedMultiplier", DEFAULT_GAME_SETTINGS["speedMultiplier"]) if settings else DEFAULT_GAME_SETTINGS["speedMultiplier"],
+                "minSpawnInterval": settings.get("minSpawnInterval", DEFAULT_GAME_SETTINGS["minSpawnInterval"]) if settings else DEFAULT_GAME_SETTINGS["minSpawnInterval"],
+                "maxSpawnInterval": settings.get("maxSpawnInterval", DEFAULT_GAME_SETTINGS["maxSpawnInterval"]) if settings else DEFAULT_GAME_SETTINGS["maxSpawnInterval"],
+                "spawnFrom": settings.get("spawnFrom", DEFAULT_GAME_SETTINGS["spawnFrom"]) if settings else DEFAULT_GAME_SETTINGS["spawnFrom"],
+                "targetFishMode": settings.get("targetFishMode", DEFAULT_GAME_SETTINGS["targetFishMode"]) if settings else DEFAULT_GAME_SETTINGS["targetFishMode"],
+                "useHandTracking": settings.get("useHandTracking", DEFAULT_GAME_SETTINGS["useHandTracking"]) if settings else DEFAULT_GAME_SETTINGS["useHandTracking"],
+                "handIndexToUse": settings.get("handIndexToUse", DEFAULT_GAME_SETTINGS["handIndexToUse"]) if settings else DEFAULT_GAME_SETTINGS["handIndexToUse"],
+                "movementSensitivity": settings.get("movementSensitivity", DEFAULT_GAME_SETTINGS["movementSensitivity"]) if settings else DEFAULT_GAME_SETTINGS["movementSensitivity"],
+                "showHandSkeleton": settings.get("showHandSkeleton", DEFAULT_GAME_SETTINGS["showHandSkeleton"]) if settings else DEFAULT_GAME_SETTINGS["showHandSkeleton"],
+                "normalizeHandSize": settings.get("normalizeHandSize", DEFAULT_GAME_SETTINGS["normalizeHandSize"]) if settings else DEFAULT_GAME_SETTINGS["normalizeHandSize"],
+                "handSize": settings.get("handSize", DEFAULT_GAME_SETTINGS["handSize"]) if settings else DEFAULT_GAME_SETTINGS["handSize"],
+                "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]) if settings else DEFAULT_GAME_SETTINGS["showGrabCursor"],
+                "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]) if settings else DEFAULT_GAME_SETTINGS["cursorSize"],
+                "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]) if settings else DEFAULT_GAME_SETTINGS["grabThreshold"],
+                "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"]) if settings else DEFAULT_GAME_SETTINGS["jointSize"]
             }
         }
     })
@@ -584,22 +611,28 @@ def get_child_settings(child_id):
         return jsonify({
             "ok": True,
             "settings": {
-                "speedMultiplier": 1.0,
-                "minSpawnInterval": 3.0,
-                "maxSpawnInterval": 6.0,
-                "spawnFrom": "Right",
-                "targetFishMode": "Random"
+                **DEFAULT_GAME_SETTINGS
             }
         })
 
     return jsonify({
         "ok": True,
         "settings": {
-            "speedMultiplier": settings.get("speedMultiplier", 1.0),
-            "minSpawnInterval": settings.get("minSpawnInterval", 3.0),
-            "maxSpawnInterval": settings.get("maxSpawnInterval", 6.0),
-            "spawnFrom": settings.get("spawnFrom", "Right"),
-            "targetFishMode": settings.get("targetFishMode", "Random")
+            "speedMultiplier": settings.get("speedMultiplier", DEFAULT_GAME_SETTINGS["speedMultiplier"]),
+            "minSpawnInterval": settings.get("minSpawnInterval", DEFAULT_GAME_SETTINGS["minSpawnInterval"]),
+            "maxSpawnInterval": settings.get("maxSpawnInterval", DEFAULT_GAME_SETTINGS["maxSpawnInterval"]),
+            "spawnFrom": settings.get("spawnFrom", DEFAULT_GAME_SETTINGS["spawnFrom"]),
+            "targetFishMode": settings.get("targetFishMode", DEFAULT_GAME_SETTINGS["targetFishMode"]),
+            "useHandTracking": settings.get("useHandTracking", DEFAULT_GAME_SETTINGS["useHandTracking"]),
+            "handIndexToUse": settings.get("handIndexToUse", DEFAULT_GAME_SETTINGS["handIndexToUse"]),
+            "movementSensitivity": settings.get("movementSensitivity", DEFAULT_GAME_SETTINGS["movementSensitivity"]),
+            "showHandSkeleton": settings.get("showHandSkeleton", DEFAULT_GAME_SETTINGS["showHandSkeleton"]),
+            "normalizeHandSize": settings.get("normalizeHandSize", DEFAULT_GAME_SETTINGS["normalizeHandSize"]),
+            "handSize": settings.get("handSize", DEFAULT_GAME_SETTINGS["handSize"]),
+            "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]),
+            "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]),
+            "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]),
+            "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"])
         }
     })
 
@@ -636,6 +669,26 @@ def update_child_settings(child_id):
         update_data["spawnFrom"] = data["spawnFrom"]
     if "targetFishMode" in data:
         update_data["targetFishMode"] = data["targetFishMode"]
+    if "useHandTracking" in data:
+        update_data["useHandTracking"] = bool(data["useHandTracking"])
+    if "handIndexToUse" in data:
+        update_data["handIndexToUse"] = int(data["handIndexToUse"])
+    if "movementSensitivity" in data:
+        update_data["movementSensitivity"] = float(data["movementSensitivity"])
+    if "showHandSkeleton" in data:
+        update_data["showHandSkeleton"] = bool(data["showHandSkeleton"])
+    if "normalizeHandSize" in data:
+        update_data["normalizeHandSize"] = bool(data["normalizeHandSize"])
+    if "handSize" in data:
+        update_data["handSize"] = float(data["handSize"])
+    if "showGrabCursor" in data:
+        update_data["showGrabCursor"] = bool(data["showGrabCursor"])
+    if "cursorSize" in data:
+        update_data["cursorSize"] = float(data["cursorSize"])
+    if "grabThreshold" in data:
+        update_data["grabThreshold"] = float(data["grabThreshold"])
+    if "jointSize" in data:
+        update_data["jointSize"] = float(data["jointSize"])
 
     update_data["updatedAt"] = datetime.utcnow()
     update_data["updatedBy"] = payload["userId"]
@@ -1090,11 +1143,21 @@ def game_settings():
 
         update_data = {
             "userId": user_id,
-            "speedMultiplier": data.get("speedMultiplier", 1.0),
-            "minSpawnInterval": data.get("minSpawnInterval", 3.0),
-            "maxSpawnInterval": data.get("maxSpawnInterval", 6.0),
-            "spawnFrom": data.get("spawnFrom", "Right"),
-            "targetFishMode": data.get("targetFishMode", "Random")
+            "speedMultiplier": data.get("speedMultiplier", DEFAULT_GAME_SETTINGS["speedMultiplier"]),
+            "minSpawnInterval": data.get("minSpawnInterval", DEFAULT_GAME_SETTINGS["minSpawnInterval"]),
+            "maxSpawnInterval": data.get("maxSpawnInterval", DEFAULT_GAME_SETTINGS["maxSpawnInterval"]),
+            "spawnFrom": data.get("spawnFrom", DEFAULT_GAME_SETTINGS["spawnFrom"]),
+            "targetFishMode": data.get("targetFishMode", DEFAULT_GAME_SETTINGS["targetFishMode"]),
+            "useHandTracking": data.get("useHandTracking", DEFAULT_GAME_SETTINGS["useHandTracking"]),
+            "handIndexToUse": data.get("handIndexToUse", DEFAULT_GAME_SETTINGS["handIndexToUse"]),
+            "movementSensitivity": data.get("movementSensitivity", DEFAULT_GAME_SETTINGS["movementSensitivity"]),
+            "showHandSkeleton": data.get("showHandSkeleton", DEFAULT_GAME_SETTINGS["showHandSkeleton"]),
+            "normalizeHandSize": data.get("normalizeHandSize", DEFAULT_GAME_SETTINGS["normalizeHandSize"]),
+            "handSize": data.get("handSize", DEFAULT_GAME_SETTINGS["handSize"]),
+            "showGrabCursor": data.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]),
+            "cursorSize": data.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]),
+            "grabThreshold": data.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]),
+            "jointSize": data.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"])
         }
 
         if username:
@@ -1118,19 +1181,25 @@ def game_settings():
     if not settings:
         print(f"[DEBUG] No settings found, returning defaults")
         return jsonify({
-            "speedMultiplier": 1.0,
-            "minSpawnInterval": 3.0,
-            "maxSpawnInterval": 6.0,
-            "spawnFrom": "Right",
-            "targetFishMode": "Random"
+            **DEFAULT_GAME_SETTINGS
         })
 
     response_data = {
-        "speedMultiplier": settings.get("speedMultiplier", 1.0),
-        "minSpawnInterval": settings.get("minSpawnInterval", 3.0),
-        "maxSpawnInterval": settings.get("maxSpawnInterval", 6.0),
-        "spawnFrom": settings.get("spawnFrom", "Right"),
-        "targetFishMode": settings.get("targetFishMode", "Random")
+        "speedMultiplier": settings.get("speedMultiplier", DEFAULT_GAME_SETTINGS["speedMultiplier"]),
+        "minSpawnInterval": settings.get("minSpawnInterval", DEFAULT_GAME_SETTINGS["minSpawnInterval"]),
+        "maxSpawnInterval": settings.get("maxSpawnInterval", DEFAULT_GAME_SETTINGS["maxSpawnInterval"]),
+        "spawnFrom": settings.get("spawnFrom", DEFAULT_GAME_SETTINGS["spawnFrom"]),
+        "targetFishMode": settings.get("targetFishMode", DEFAULT_GAME_SETTINGS["targetFishMode"]),
+        "useHandTracking": settings.get("useHandTracking", DEFAULT_GAME_SETTINGS["useHandTracking"]),
+        "handIndexToUse": settings.get("handIndexToUse", DEFAULT_GAME_SETTINGS["handIndexToUse"]),
+        "movementSensitivity": settings.get("movementSensitivity", DEFAULT_GAME_SETTINGS["movementSensitivity"]),
+        "showHandSkeleton": settings.get("showHandSkeleton", DEFAULT_GAME_SETTINGS["showHandSkeleton"]),
+        "normalizeHandSize": settings.get("normalizeHandSize", DEFAULT_GAME_SETTINGS["normalizeHandSize"]),
+        "handSize": settings.get("handSize", DEFAULT_GAME_SETTINGS["handSize"]),
+        "showGrabCursor": settings.get("showGrabCursor", DEFAULT_GAME_SETTINGS["showGrabCursor"]),
+        "cursorSize": settings.get("cursorSize", DEFAULT_GAME_SETTINGS["cursorSize"]),
+        "grabThreshold": settings.get("grabThreshold", DEFAULT_GAME_SETTINGS["grabThreshold"]),
+        "jointSize": settings.get("jointSize", DEFAULT_GAME_SETTINGS["jointSize"])
     }
     print(f"[DEBUG] Returning settings: {response_data}")
     return jsonify(response_data)

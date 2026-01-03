@@ -8,12 +8,15 @@ public class GameSettingsManager : MonoBehaviour
     [Header("References")]
     public GameSettings gameSettings;
 
+    [Header("Hand Tracking")]
+    [SerializeField] private HandTrackingCatcher handTrackingCatcher;
+
     [Header("Backend")]
     public string backendBaseUrl = "http://127.0.0.1:5001";
 
     [Header("Real-time Sync")]
     [Tooltip("How often to check for settings changes (in seconds)")]
-    public float pollInterval = 3f;
+    public float pollInterval = 2f;
     
     private Coroutine pollingCoroutine;
     private bool isPolling = false;
@@ -31,6 +34,11 @@ public class GameSettingsManager : MonoBehaviour
         else
         {
             Debug.Log($"[GameSettingsManager] Using settings asset: {gameSettings.name}");
+        }
+
+        if (handTrackingCatcher == null)
+        {
+            handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
         }
     }
 
@@ -196,7 +204,17 @@ public class GameSettingsManager : MonoBehaviour
             minSpawnInterval = gameSettings.minSpawnInterval,
             maxSpawnInterval = gameSettings.maxSpawnInterval,
             spawnFrom = gameSettings.spawnFrom.ToString(),
-            targetFishMode = gameSettings.targetFishMode.ToString()
+            targetFishMode = gameSettings.targetFishMode.ToString(),
+            useHandTracking = handTrackingCatcher != null && handTrackingCatcher.IsHandTrackingEnabled(),
+            handIndexToUse = handTrackingCatcher != null ? handTrackingCatcher.GetHandIndexToUse() : 0,
+            movementSensitivity = handTrackingCatcher != null ? handTrackingCatcher.GetMovementSensitivity() : 1.5f,
+            showHandSkeleton = handTrackingCatcher != null && handTrackingCatcher.GetShowHandSkeleton(),
+            normalizeHandSize = handTrackingCatcher != null && handTrackingCatcher.GetNormalizeHandSize(),
+            handSize = handTrackingCatcher != null ? handTrackingCatcher.GetHandSize() : 5f,
+            showGrabCursor = handTrackingCatcher != null && handTrackingCatcher.GetShowGrabCursor(),
+            cursorSize = handTrackingCatcher != null ? handTrackingCatcher.GetCursorSize() : 3f,
+            grabThreshold = handTrackingCatcher != null ? handTrackingCatcher.GetGrabThreshold() : 0.6f,
+            jointSize = handTrackingCatcher != null ? handTrackingCatcher.GetJointSize() : 7f
         };
 
         string json = JsonUtility.ToJson(dto);
@@ -276,6 +294,27 @@ public class GameSettingsManager : MonoBehaviour
         {
             GameManager.Instance.SetRandomTargetFish();
             Debug.Log($"[GameSettingsManager] Target fish mode changed from {oldTargetMode} to {gameSettings.targetFishMode} - updating target fish");
+        }
+
+        if (handTrackingCatcher == null)
+        {
+            handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
+        }
+
+        if (handTrackingCatcher != null)
+        {
+            handTrackingCatcher.ApplySettings(
+                dto.useHandTracking,
+                dto.handIndexToUse,
+                dto.movementSensitivity,
+                dto.showHandSkeleton,
+                dto.normalizeHandSize,
+                dto.handSize,
+                dto.showGrabCursor,
+                dto.cursorSize,
+                dto.grabThreshold,
+                dto.jointSize
+            );
         }
     }
 }

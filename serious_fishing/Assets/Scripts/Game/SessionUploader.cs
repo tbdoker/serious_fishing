@@ -13,11 +13,24 @@ public class SessionUploader : MonoBehaviour
     [Header("Game Settings Reference")]
     public GameSettings gameSettings;
 
+    [Header("Hand Tracking")]
+    [SerializeField] private HandTrackingCatcher handTrackingCatcher;
+
     private DateTime sessionStartTime;
 
     void Start()
     {
         sessionStartTime = DateTime.UtcNow;
+
+        if (handTrackingCatcher == null)
+        {
+            handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
+        }
+
+        if (handTrackingCatcher != null)
+        {
+            handTrackingCatcher.ResetHandTrackingUsage();
+        }
 
         if (SessionStats.Instance != null)
         {
@@ -84,6 +97,7 @@ public class SessionUploader : MonoBehaviour
             sessionDuration = stats.GetSessionTime(),
 
             gameSettings = settingsData,
+            handTrackingUsed = handTrackingCatcher != null && handTrackingCatcher.WasHandTrackingUsed(),
 
             correctFish = stats.correctFish,
             wrongFish = stats.wrongFish,

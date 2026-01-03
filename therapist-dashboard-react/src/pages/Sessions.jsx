@@ -248,6 +248,7 @@ export default function Sessions() {
                 <th>Child</th>
                 <th>Date & Time</th>
                 <th>Duration</th>
+                <th>Hand</th>
                 <th>Accuracy</th>
                 <th>Correct</th>
                 <th>Wrong</th>
@@ -274,6 +275,15 @@ export default function Sessions() {
                   </td>
                   <td>{formatDate(session.sessionStartTime)}</td>
                   <td>{formatDuration(session.sessionDuration)}</td>
+                  <td>
+                    <span className="badge badge-info">
+                      {session.handTrackingUsed === true
+                        ? 'Yes'
+                        : session.handTrackingUsed === false
+                        ? 'No'
+                        : '—'}
+                    </span>
+                  </td>
                   <td>
                     <span
                       className={`badge ${

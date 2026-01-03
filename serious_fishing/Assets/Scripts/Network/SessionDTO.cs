@@ -50,6 +50,9 @@ public class SessionDTO
     // Game settings used during this session
     public GameSettingsData gameSettings;
 
+    // Input mode
+    public bool handTrackingUsed;
+
     // Fish interaction metrics
     public int correctFish;
     public int wrongFish;

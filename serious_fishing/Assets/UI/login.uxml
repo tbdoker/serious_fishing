@@ -60,6 +60,7 @@
         <ui:VisualElement class="settings-card">
             <ui:Label text="GAME SETTINGS" class="settings-title" />
 
+            <ui:ScrollView name="settingsScroll" class="settings-scroll">
             <!-- Fish Speed -->
             <ui:VisualElement class="settings-group">
                 <ui:VisualElement style="flex-direction: row; align-items: center;">
@@ -98,6 +99,70 @@
                 <ui:Label text="Target Fish:" class="settings-label" />
                 <ui:DropdownField name="targetFishDropdown" class="settings-dropdown" />
             </ui:VisualElement>
+
+            <ui:Label text="HAND TRACKING" class="settings-subtitle" />
+
+            <ui:VisualElement class="settings-group">
+                <ui:Toggle name="useHandTrackingToggle" label="Enable Hand Tracking" class="settings-toggle" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:Label text="Hand Index:" class="settings-label" />
+                <ui:DropdownField name="handIndexDropdown" class="settings-dropdown" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Movement Sensitivity:" class="settings-label" />
+                    <ui:Label text="1.5x" name="movementSensitivityValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="movementSensitivitySlider" low-value="0" high-value="10" value="1.5" class="settings-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:Toggle name="showHandSkeletonToggle" label="Show Hand Skeleton" class="settings-toggle" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:Toggle name="normalizeHandSizeToggle" label="Normalize Hand Size" class="settings-toggle" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Hand Size:" class="settings-label" />
+                    <ui:Label text="5" name="handSizeValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="handSizeSlider" low-value="0" high-value="100" value="5" class="settings-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:Toggle name="showGrabCursorToggle" label="Show Grab Cursor" class="settings-toggle" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Grab Cursor Size:" class="settings-label" />
+                    <ui:Label text="3" name="cursorSizeValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="cursorSizeSlider" low-value="1" high-value="100" value="3" class="settings-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Grab Threshold:" class="settings-label" />
+                    <ui:Label text="0.60" name="grabThresholdValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="grabThresholdSlider" low-value="0" high-value="1" value="0.6" class="settings-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="settings-group">
+                <ui:VisualElement style="flex-direction: row; align-items: center;">
+                    <ui:Label text="Joint Size:" class="settings-label" />
+                    <ui:Label text="7" name="jointSizeValue" class="settings-value" />
+                </ui:VisualElement>
+                <ui:Slider name="jointSizeSlider" low-value="0" high-value="20" value="7" class="settings-slider" />
+            </ui:VisualElement>
+            </ui:ScrollView>
 
             <!-- Buttons -->
             <ui:VisualElement class="settings-buttons">

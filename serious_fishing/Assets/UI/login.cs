@@ -17,6 +17,7 @@ public class Login : MonoBehaviour
     public GameObject gameRoot;
     public MenuFishSpawner menuFishSpawner;
     public GameSettings gameSettings;
+    public HandTrackingCatcher handTrackingCatcher;
 
     // UI references
     private VisualElement loginView;
@@ -52,6 +53,21 @@ public class Login : MonoBehaviour
     private Label speedValue;
     private Label minSpawnValue;
     private Label maxSpawnValue;
+    private Toggle useHandTrackingToggle;
+    private DropdownField handIndexDropdown;
+    private Slider movementSensitivitySlider;
+    private Label movementSensitivityValue;
+    private Toggle showHandSkeletonToggle;
+    private Toggle normalizeHandSizeToggle;
+    private Slider handSizeSlider;
+    private Label handSizeValue;
+    private Toggle showGrabCursorToggle;
+    private Slider cursorSizeSlider;
+    private Label cursorSizeValue;
+    private Slider grabThresholdSlider;
+    private Label grabThresholdValue;
+    private Slider jointSizeSlider;
+    private Label jointSizeValue;
 
     // --------------------------------------------------
     // INITIALIZATION
@@ -137,6 +153,21 @@ public class Login : MonoBehaviour
         speedValue = root.Q<Label>("speedValue");
         minSpawnValue = root.Q<Label>("minSpawnValue");
         maxSpawnValue = root.Q<Label>("maxSpawnValue");
+        useHandTrackingToggle = root.Q<Toggle>("useHandTrackingToggle");
+        handIndexDropdown = root.Q<DropdownField>("handIndexDropdown");
+        movementSensitivitySlider = root.Q<Slider>("movementSensitivitySlider");
+        movementSensitivityValue = root.Q<Label>("movementSensitivityValue");
+        showHandSkeletonToggle = root.Q<Toggle>("showHandSkeletonToggle");
+        normalizeHandSizeToggle = root.Q<Toggle>("normalizeHandSizeToggle");
+        handSizeSlider = root.Q<Slider>("handSizeSlider");
+        handSizeValue = root.Q<Label>("handSizeValue");
+        showGrabCursorToggle = root.Q<Toggle>("showGrabCursorToggle");
+        cursorSizeSlider = root.Q<Slider>("cursorSizeSlider");
+        cursorSizeValue = root.Q<Label>("cursorSizeValue");
+        grabThresholdSlider = root.Q<Slider>("grabThresholdSlider");
+        grabThresholdValue = root.Q<Label>("grabThresholdValue");
+        jointSizeSlider = root.Q<Slider>("jointSizeSlider");
+        jointSizeValue = root.Q<Label>("jointSizeValue");
         var btnSaveSettings = root.Q<Button>("btnSaveSettings");
         var btnCloseSettings = root.Q<Button>("btnCloseSettings");
 
@@ -163,6 +194,14 @@ public class Login : MonoBehaviour
         if (minSpawnSlider != null) { minSpawnSlider.UnregisterValueChangedCallback(OnMinSpawnChanged); minSpawnSlider.RegisterValueChangedCallback(OnMinSpawnChanged); }
         if (maxSpawnSlider != null) { maxSpawnSlider.UnregisterValueChangedCallback(OnMaxSpawnChanged); maxSpawnSlider.RegisterValueChangedCallback(OnMaxSpawnChanged); }
         if (targetFishDropdown != null) { targetFishDropdown.UnregisterValueChangedCallback(OnTargetFishChanged); targetFishDropdown.RegisterValueChangedCallback(OnTargetFishChanged); }
+        if (useHandTrackingToggle != null) { useHandTrackingToggle.UnregisterValueChangedCallback(OnUseHandTrackingChanged); useHandTrackingToggle.RegisterValueChangedCallback(OnUseHandTrackingChanged); }
+        if (movementSensitivitySlider != null) { movementSensitivitySlider.UnregisterValueChangedCallback(OnMovementSensitivityChanged); movementSensitivitySlider.RegisterValueChangedCallback(OnMovementSensitivityChanged); }
+        if (normalizeHandSizeToggle != null) { normalizeHandSizeToggle.UnregisterValueChangedCallback(OnNormalizeHandSizeChanged); normalizeHandSizeToggle.RegisterValueChangedCallback(OnNormalizeHandSizeChanged); }
+        if (handSizeSlider != null) { handSizeSlider.UnregisterValueChangedCallback(OnHandSizeChanged); handSizeSlider.RegisterValueChangedCallback(OnHandSizeChanged); }
+        if (showGrabCursorToggle != null) { showGrabCursorToggle.UnregisterValueChangedCallback(OnShowGrabCursorChanged); showGrabCursorToggle.RegisterValueChangedCallback(OnShowGrabCursorChanged); }
+        if (cursorSizeSlider != null) { cursorSizeSlider.UnregisterValueChangedCallback(OnCursorSizeChanged); cursorSizeSlider.RegisterValueChangedCallback(OnCursorSizeChanged); }
+        if (grabThresholdSlider != null) { grabThresholdSlider.UnregisterValueChangedCallback(OnGrabThresholdChanged); grabThresholdSlider.RegisterValueChangedCallback(OnGrabThresholdChanged); }
+        if (jointSizeSlider != null) { jointSizeSlider.UnregisterValueChangedCallback(OnJointSizeChanged); jointSizeSlider.RegisterValueChangedCallback(OnJointSizeChanged); }
         if (btnSaveSettings != null) { btnSaveSettings.clicked -= OnSaveSettings; btnSaveSettings.clicked += OnSaveSettings; }
         if (btnCloseSettings != null) { btnCloseSettings.clicked -= OnCloseSettings; btnCloseSettings.clicked += OnCloseSettings; }
 
@@ -191,6 +230,17 @@ public class Login : MonoBehaviour
                 "Fixed: Green"
             };
             targetFishDropdown.value = "Random (changes each catch)";
+        }
+
+        if (handIndexDropdown != null)
+        {
+            handIndexDropdown.choices = new List<string> { "0", "1" };
+            handIndexDropdown.value = "0";
+        }
+
+        if (handTrackingCatcher == null)
+        {
+            handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
         }
 
         ShowLogin();
@@ -451,6 +501,10 @@ public class Login : MonoBehaviour
         if (gameRoot != null)
             gameRoot.SetActive(true);
 
+        // Ensure hand tracking runner restarts after returning to menu
+        var handRunner = FindFirstObjectByType<GameHandLandmarkerRunner>();
+        handRunner?.Play();
+
         // Ensure PauseMenuController is active
         PauseMenuController pauseController = FindFirstObjectByType<PauseMenuController>();
         if (pauseController != null)
@@ -556,6 +610,97 @@ public class Login : MonoBehaviour
                     break;
             }
         }
+
+        if (handTrackingCatcher == null)
+        {
+            handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
+        }
+
+        if (useHandTrackingToggle != null)
+        {
+            useHandTrackingToggle.value = handTrackingCatcher != null
+                ? handTrackingCatcher.IsHandTrackingEnabled()
+                : true;
+        }
+
+        if (handIndexDropdown != null)
+        {
+            int handIndex = handTrackingCatcher != null ? handTrackingCatcher.GetHandIndexToUse() : 0;
+            handIndexDropdown.value = handIndex.ToString();
+        }
+
+        if (movementSensitivitySlider != null)
+        {
+            float sensitivity = handTrackingCatcher != null ? handTrackingCatcher.GetMovementSensitivity() : 1.5f;
+            movementSensitivitySlider.value = sensitivity;
+            if (movementSensitivityValue != null)
+            {
+                movementSensitivityValue.text = $"{sensitivity:F1}x";
+            }
+        }
+
+        if (showHandSkeletonToggle != null)
+        {
+            showHandSkeletonToggle.value = handTrackingCatcher != null
+                ? handTrackingCatcher.GetShowHandSkeleton()
+                : true;
+        }
+
+        if (normalizeHandSizeToggle != null)
+        {
+            normalizeHandSizeToggle.value = handTrackingCatcher != null
+                ? handTrackingCatcher.GetNormalizeHandSize()
+                : true;
+        }
+
+        if (handSizeSlider != null)
+        {
+            float size = handTrackingCatcher != null ? handTrackingCatcher.GetHandSize() : 5f;
+            handSizeSlider.value = size;
+            if (handSizeValue != null)
+            {
+                handSizeValue.text = $"{size:F0}";
+            }
+        }
+
+        if (showGrabCursorToggle != null)
+        {
+            showGrabCursorToggle.value = handTrackingCatcher != null
+                ? handTrackingCatcher.GetShowGrabCursor()
+                : true;
+        }
+
+        if (cursorSizeSlider != null)
+        {
+            float size = handTrackingCatcher != null ? handTrackingCatcher.GetCursorSize() : 3f;
+            cursorSizeSlider.value = size;
+            if (cursorSizeValue != null)
+            {
+                cursorSizeValue.text = $"{size:F0}";
+            }
+        }
+
+        if (grabThresholdSlider != null)
+        {
+            float threshold = handTrackingCatcher != null ? handTrackingCatcher.GetGrabThreshold() : 0.6f;
+            grabThresholdSlider.value = threshold;
+            if (grabThresholdValue != null)
+            {
+                grabThresholdValue.text = $"{threshold:F2}";
+            }
+        }
+
+        if (jointSizeSlider != null)
+        {
+            float size = handTrackingCatcher != null ? handTrackingCatcher.GetJointSize() : 7f;
+            jointSizeSlider.value = size;
+            if (jointSizeValue != null)
+            {
+                jointSizeValue.text = $"{size:F0}";
+            }
+        }
+
+        UpdateHandTrackingControlStates();
     }
 
     void OnSpeedChanged(ChangeEvent<float> evt)
@@ -574,6 +719,81 @@ public class Login : MonoBehaviour
     {
         if (maxSpawnValue != null)
             maxSpawnValue.text = $"{evt.newValue:F1}s";
+    }
+
+    void OnUseHandTrackingChanged(ChangeEvent<bool> evt)
+    {
+        UpdateHandTrackingControlStates();
+    }
+
+    void OnMovementSensitivityChanged(ChangeEvent<float> evt)
+    {
+        if (movementSensitivityValue != null)
+        {
+            movementSensitivityValue.text = $"{evt.newValue:F1}x";
+        }
+    }
+
+    void OnNormalizeHandSizeChanged(ChangeEvent<bool> evt)
+    {
+        UpdateHandTrackingControlStates();
+    }
+
+    void OnHandSizeChanged(ChangeEvent<float> evt)
+    {
+        if (handSizeValue != null)
+        {
+            handSizeValue.text = $"{evt.newValue:F0}";
+        }
+    }
+
+    void OnShowGrabCursorChanged(ChangeEvent<bool> evt)
+    {
+        UpdateHandTrackingControlStates();
+    }
+
+    void OnCursorSizeChanged(ChangeEvent<float> evt)
+    {
+        if (cursorSizeValue != null)
+        {
+            cursorSizeValue.text = $"{evt.newValue:F0}";
+        }
+    }
+
+    void OnGrabThresholdChanged(ChangeEvent<float> evt)
+    {
+        if (grabThresholdValue != null)
+        {
+            grabThresholdValue.text = $"{evt.newValue:F2}";
+        }
+    }
+
+    void OnJointSizeChanged(ChangeEvent<float> evt)
+    {
+        if (jointSizeValue != null)
+        {
+            jointSizeValue.text = $"{evt.newValue:F0}";
+        }
+    }
+
+    void UpdateHandTrackingControlStates()
+    {
+        bool trackingEnabled = useHandTrackingToggle == null || useHandTrackingToggle.value;
+
+        handIndexDropdown?.SetEnabled(trackingEnabled);
+        movementSensitivitySlider?.SetEnabled(trackingEnabled);
+        showHandSkeletonToggle?.SetEnabled(trackingEnabled);
+        normalizeHandSizeToggle?.SetEnabled(trackingEnabled);
+        showGrabCursorToggle?.SetEnabled(trackingEnabled);
+
+        bool handSizeEnabled = trackingEnabled && (normalizeHandSizeToggle == null || normalizeHandSizeToggle.value);
+        handSizeSlider?.SetEnabled(handSizeEnabled);
+
+        bool cursorSizeEnabled = trackingEnabled && (showGrabCursorToggle == null || showGrabCursorToggle.value);
+        cursorSizeSlider?.SetEnabled(cursorSizeEnabled);
+
+        grabThresholdSlider?.SetEnabled(trackingEnabled);
+        jointSizeSlider?.SetEnabled(trackingEnabled);
     }
 
     void OnTargetFishChanged(ChangeEvent<string> evt)
@@ -643,6 +863,38 @@ public class Login : MonoBehaviour
                 break;
         }
 
+        if (handTrackingCatcher == null)
+        {
+            handTrackingCatcher = FindFirstObjectByType<HandTrackingCatcher>();
+        }
+
+        if (handTrackingCatcher != null)
+        {
+            bool useTracking = useHandTrackingToggle == null || useHandTrackingToggle.value;
+            int handIndex = ParseHandIndex();
+            float sensitivity = movementSensitivitySlider != null ? movementSensitivitySlider.value : 1.5f;
+            bool showSkeleton = showHandSkeletonToggle == null || showHandSkeletonToggle.value;
+            bool normalizeSize = normalizeHandSizeToggle == null || normalizeHandSizeToggle.value;
+            float size = handSizeSlider != null ? handSizeSlider.value : 5f;
+            bool showCursor = showGrabCursorToggle == null || showGrabCursorToggle.value;
+            float cursorSize = cursorSizeSlider != null ? cursorSizeSlider.value : 3f;
+            float grabThreshold = grabThresholdSlider != null ? grabThresholdSlider.value : 0.6f;
+            float jointSize = jointSizeSlider != null ? jointSizeSlider.value : 7f;
+
+            handTrackingCatcher.ApplySettings(
+                useTracking,
+                handIndex,
+                sensitivity,
+                showSkeleton,
+                normalizeSize,
+                size,
+                showCursor,
+                cursorSize,
+                grabThreshold,
+                jointSize
+            );
+        }
+
         // Save settings directly to backend
         StartCoroutine(SaveSettingsToBackend());
 
@@ -681,7 +933,17 @@ public class Login : MonoBehaviour
             minSpawnInterval = gameSettings.minSpawnInterval,
             maxSpawnInterval = gameSettings.maxSpawnInterval,
             spawnFrom = gameSettings.spawnFrom.ToString(),
-            targetFishMode = gameSettings.targetFishMode.ToString()
+            targetFishMode = gameSettings.targetFishMode.ToString(),
+            useHandTracking = useHandTrackingToggle == null || useHandTrackingToggle.value,
+            handIndexToUse = ParseHandIndex(),
+            movementSensitivity = movementSensitivitySlider != null ? movementSensitivitySlider.value : 1.5f,
+            showHandSkeleton = showHandSkeletonToggle == null || showHandSkeletonToggle.value,
+            normalizeHandSize = normalizeHandSizeToggle == null || normalizeHandSizeToggle.value,
+            handSize = handSizeSlider != null ? handSizeSlider.value : 5f,
+            showGrabCursor = showGrabCursorToggle == null || showGrabCursorToggle.value,
+            cursorSize = cursorSizeSlider != null ? cursorSizeSlider.value : 3f,
+            grabThreshold = grabThresholdSlider != null ? grabThresholdSlider.value : 0.6f,
+            jointSize = jointSizeSlider != null ? jointSizeSlider.value : 7f
         };
 
         string json = JsonUtility.ToJson(dto);
@@ -720,6 +982,21 @@ public class Login : MonoBehaviour
         {
             ShowWelcomeView();
         }
+    }
+
+    int ParseHandIndex()
+    {
+        if (handIndexDropdown == null || string.IsNullOrEmpty(handIndexDropdown.value))
+        {
+            return 0;
+        }
+
+        if (int.TryParse(handIndexDropdown.value, out int value))
+        {
+            return Mathf.Max(0, value);
+        }
+
+        return 0;
     }
 
     // --------------------------------------------------
@@ -840,6 +1117,10 @@ public class Login : MonoBehaviour
         // Stop polling when returning to menu
         GameSettingsManager settingsManager = FindFirstObjectByType<GameSettingsManager>();
         settingsManager?.StopPolling();
+
+        // Stop hand tracking runner when leaving gameplay
+        var handRunner = FindFirstObjectByType<GameHandLandmarkerRunner>();
+        handRunner?.Stop();
 
         // Stop fish spawning before hiding game
         FishSpawner fishSpawner = FindFirstObjectByType<FishSpawner>();

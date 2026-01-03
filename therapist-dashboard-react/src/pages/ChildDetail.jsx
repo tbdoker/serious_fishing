@@ -92,6 +92,16 @@ export default function ChildDetail() {
           maxSpawnInterval: childSettings.maxSpawnInterval ?? 6.0,
           spawnFrom: childSettings.spawnFrom ?? 'Right',
           targetFishMode: childSettings.targetFishMode ?? 'Random',
+          useHandTracking: childSettings.useHandTracking ?? true,
+          handIndexToUse: childSettings.handIndexToUse ?? 0,
+          movementSensitivity: childSettings.movementSensitivity ?? 1.5,
+          showHandSkeleton: childSettings.showHandSkeleton ?? true,
+          normalizeHandSize: childSettings.normalizeHandSize ?? true,
+          handSize: childSettings.handSize ?? 5,
+          showGrabCursor: childSettings.showGrabCursor ?? true,
+          cursorSize: childSettings.cursorSize ?? 3,
+          grabThreshold: childSettings.grabThreshold ?? 0.6,
+          jointSize: childSettings.jointSize ?? 7,
         };
         console.log('Settings state being set:', loadedSettings);
         setSettings(loadedSettings);
@@ -547,6 +557,9 @@ export default function ChildDetail() {
             </div>
 
             <div className="settings-grid">
+              <div className="settings-section">
+                <span>Game Settings</span>
+              </div>
               <div className="setting-item">
                 <label>
                   <Zap size={16} />
@@ -642,6 +655,202 @@ export default function ChildDetail() {
                   <option value="FixedPink">Fixed: Pink</option>
                   <option value="FixedGreen">Fixed: Green</option>
                 </select>
+              </div>
+
+              <div className="settings-section">
+                <span>Hand Tracker Settings</span>
+                <span className="settings-section-hint">Disable to use mouse/touch only</span>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Eye size={16} />
+                  Enable Hand Tracking
+                </label>
+                <div className="toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={settings.useHandTracking}
+                    onChange={(e) => handleSettingsChange('useHandTracking', e.target.checked)}
+                  />
+                  <span className="toggle-label">
+                    {settings.useHandTracking ? 'On' : 'Off'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Eye size={16} />
+                  Hand Index
+                </label>
+                <select
+                  value={settings.handIndexToUse}
+                  onChange={(e) =>
+                    handleSettingsChange('handIndexToUse', parseInt(e.target.value, 10))
+                  }
+                  className="form-select"
+                  disabled={!settings.useHandTracking}
+                >
+                  <option value={0}>Primary (0)</option>
+                  <option value={1}>Secondary (1)</option>
+                </select>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <TrendingUp size={16} />
+                  Movement Sensitivity
+                </label>
+                <div className="slider-wrapper">
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    value={settings.movementSensitivity}
+                    onChange={(e) =>
+                      handleSettingsChange('movementSensitivity', parseFloat(e.target.value))
+                    }
+                    className="slider"
+                    disabled={!settings.useHandTracking}
+                  />
+                  <span className="slider-value">{settings.movementSensitivity.toFixed(1)}x</span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Target size={16} />
+                  Normalize Hand Size
+                </label>
+                <div className="toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={settings.normalizeHandSize}
+                    onChange={(e) => handleSettingsChange('normalizeHandSize', e.target.checked)}
+                    disabled={!settings.useHandTracking}
+                  />
+                  <span className="toggle-label">
+                    {settings.normalizeHandSize ? 'On' : 'Off'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Target size={16} />
+                  Hand Size
+                </label>
+                <div className="slider-wrapper">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={settings.handSize}
+                    onChange={(e) => handleSettingsChange('handSize', parseFloat(e.target.value))}
+                    className="slider"
+                    disabled={!settings.useHandTracking || !settings.normalizeHandSize}
+                  />
+                  <span className="slider-value">{settings.handSize.toFixed(0)}</span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Eye size={16} />
+                  Show Hand Skeleton
+                </label>
+                <div className="toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={settings.showHandSkeleton}
+                    onChange={(e) => handleSettingsChange('showHandSkeleton', e.target.checked)}
+                    disabled={!settings.useHandTracking}
+                  />
+                  <span className="toggle-label">
+                    {settings.showHandSkeleton ? 'On' : 'Off'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Eye size={16} />
+                  Show Grab Cursor
+                </label>
+                <div className="toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={settings.showGrabCursor}
+                    onChange={(e) => handleSettingsChange('showGrabCursor', e.target.checked)}
+                    disabled={!settings.useHandTracking}
+                  />
+                  <span className="toggle-label">
+                    {settings.showGrabCursor ? 'On' : 'Off'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Target size={16} />
+                  Grab Cursor Size
+                </label>
+                <div className="slider-wrapper">
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value={settings.cursorSize}
+                    onChange={(e) => handleSettingsChange('cursorSize', parseFloat(e.target.value))}
+                    className="slider"
+                    disabled={!settings.useHandTracking || !settings.showGrabCursor}
+                  />
+                  <span className="slider-value">{settings.cursorSize.toFixed(0)}</span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Target size={16} />
+                  Grab Threshold
+                </label>
+                <div className="slider-wrapper">
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={settings.grabThreshold}
+                    onChange={(e) => handleSettingsChange('grabThreshold', parseFloat(e.target.value))}
+                    className="slider"
+                    disabled={!settings.useHandTracking}
+                  />
+                  <span className="slider-value">{settings.grabThreshold.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="setting-item">
+                <label>
+                  <Target size={16} />
+                  Joint Size
+                </label>
+                <div className="slider-wrapper">
+                  <input
+                    type="range"
+                    min="0"
+                    max="20"
+                    step="1"
+                    value={settings.jointSize}
+                    onChange={(e) => handleSettingsChange('jointSize', parseFloat(e.target.value))}
+                    className="slider"
+                    disabled={!settings.useHandTracking}
+                  />
+                  <span className="slider-value">{settings.jointSize.toFixed(0)}</span>
+                </div>
               </div>
             </div>
 
@@ -848,6 +1057,7 @@ export default function ChildDetail() {
                       <th>Date</th>
                       <th>Duration</th>
                       <th>Settings</th>
+                      <th>Hand</th>
                       <th>Accuracy</th>
                       <th>Difficulty</th>
                       <th>Adj. Score</th>
@@ -876,6 +1086,15 @@ export default function ChildDetail() {
                           <span className="setting-badge" title="Spawn Side">
                             {session.gameSettings?.spawnFrom === 'Left' ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}
                             {session.gameSettings?.spawnFrom || 'Right'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="badge badge-info">
+                            {session.handTrackingUsed === true
+                              ? 'Yes'
+                              : session.handTrackingUsed === false
+                              ? 'No'
+                              : '—'}
                           </span>
                         </td>
                         <td>
@@ -1131,6 +1350,42 @@ export default function ChildDetail() {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           gap: 1.5rem;
+        }
+
+        .settings-section {
+          grid-column: 1 / -1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          padding-top: 0.75rem;
+          margin-top: 0.5rem;
+          border-top: 1px dashed var(--gray-200);
+          color: var(--gray-600);
+          font-weight: 600;
+        }
+
+        .settings-section:first-of-type {
+          border-top: none;
+          padding-top: 0;
+          margin-top: 0;
+        }
+
+        .settings-section-hint {
+          font-weight: 400;
+          font-size: 0.8125rem;
+          color: var(--gray-500);
+        }
+
+        .toggle-row {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .toggle-label {
+          font-size: 0.875rem;
+          color: var(--gray-600);
         }
 
         .setting-item label {

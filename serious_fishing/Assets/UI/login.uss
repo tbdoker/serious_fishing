@@ -220,6 +220,10 @@
     border-color: rgba(40, 130, 180, 0.8);
 }
 
+.settings-scroll {
+    max-height: 520px;
+}
+
 .settings-title {
     font-size: 36px;
     color: rgb(100, 200, 255);
@@ -227,6 +231,14 @@
     align-self: center;
     margin-bottom: 30px;
     -unity-text-align: middle-center;
+}
+
+.settings-subtitle {
+    font-size: 24px;
+    color: rgb(80, 190, 235);
+    -unity-font-style: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .settings-group {
@@ -275,6 +287,12 @@
     border-radius: 10px;
     padding: 10px;
     color: white;
+}
+
+.settings-toggle {
+    font-size: 18px;
+    color: white;
+    -unity-font-style: bold;
 }
 
 .settings-buttons {
