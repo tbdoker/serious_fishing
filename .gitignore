@@ -9,6 +9,13 @@ serious_fishing/Builds/
 serious_fishing/obj/
 serious_fishing/MemoryCaptures/
 
+# MediaPipe (large native libraries, install separately)
+serious_fishing/Packages/com.github.homuler.mediapipe/
+serious_fishing/Assets/MediaPipeUnity/
+serious_fishing/Assets/MediaPipeUnity.meta
+serious_fishing/Mediapipe.Runtime.csproj
+serious_fishing/Mediapipe.Tests.EditMode.csproj
+
 # Unity meta files (keep these, but ignore generated ones in Library)
 # *.meta  # Don't ignore - Unity needs these
 
