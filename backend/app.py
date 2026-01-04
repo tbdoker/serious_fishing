@@ -937,13 +937,27 @@ def get_child_progress(child_id):
     total_wrong = sum(s.get("wrongFish", 0) for s in sessions)
     total_time = sum(s.get("sessionDuration", 0) for s in sessions)
 
+    def calc_difficulty(session):
+        settings = session.get("gameSettings", {}) or {}
+        speed = settings.get("speedMultiplier", 1.0)
+        min_spawn = settings.get("minSpawnInterval", 3.0)
+        max_spawn = settings.get("maxSpawnInterval", 6.0)
+        avg_spawn = (min_spawn + max_spawn) / 2 if (min_spawn and max_spawn) else 1.0
+        base_interval = 4.0
+        return speed * (base_interval / avg_spawn) if avg_spawn > 0 else 0
+
+    def calc_normalized_performance(session):
+        accuracy = to_percent(session.get("fishAccuracy", 0))
+        difficulty = calc_difficulty(session)
+        return accuracy * difficulty if difficulty > 0 else accuracy
+
     # Calculate improvement (compare first 3 sessions vs last 3 sessions)
     if total_sessions >= 6:
-        first_3_avg = sum(to_percent(s.get("fishAccuracy", 0)) for s in sessions[:3]) / 3
-        last_3_avg = sum(to_percent(s.get("fishAccuracy", 0)) for s in sessions[-3:]) / 3
+        first_3_avg = sum(calc_normalized_performance(s) for s in sessions[:3]) / 3
+        last_3_avg = sum(calc_normalized_performance(s) for s in sessions[-3:]) / 3
         improvement = last_3_avg - first_3_avg
     elif total_sessions >= 2:
-        improvement = to_percent(sessions[-1].get("fishAccuracy", 0)) - to_percent(sessions[0].get("fishAccuracy", 0))
+        improvement = calc_normalized_performance(sessions[-1]) - calc_normalized_performance(sessions[0])
     else:
         improvement = 0
 
@@ -982,6 +996,7 @@ def get_child_heatmap(child_id):
         return jsonify({"ok": False, "message": "Child not found"}), 404
 
     session_id = request.args.get("sessionId")
+    hand_filter = request.args.get("hand")
 
     if session_id:
         # Get heatmap for specific session
@@ -1017,6 +1032,10 @@ def get_child_heatmap(child_id):
     else:
         # Get aggregated heatmap across all sessions
         sessions = list(sessions_col.find({"userId": child_id}))
+        if hand_filter == "hand":
+            sessions = [s for s in sessions if s.get("handTrackingUsed") is True]
+        elif hand_filter == "no-hand":
+            sessions = [s for s in sessions if s.get("handTrackingUsed") is not True]
 
         all_clicks = []
         # Aggregate quadrant stats

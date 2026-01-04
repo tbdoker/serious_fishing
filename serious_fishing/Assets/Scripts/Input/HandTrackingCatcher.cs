@@ -28,7 +28,7 @@ public class HandTrackingCatcher : MonoBehaviour
 
     [Header("Grab Detection")]
     [SerializeField] [Range(0f, 1f)] private float grabThreshold = 0.6f; // How closed the hand needs to be (0-1)
-    [SerializeField] private float catchCooldown = 0.5f; // Prevent double catches
+    [SerializeField] private float catchCooldown = 0f; // Prevent double catches
 
     // Catch radius matches cursor size
     private float catchRadius => cursorSize;
@@ -44,6 +44,7 @@ public class HandTrackingCatcher : MonoBehaviour
     private bool handEverDetected = false;
     private bool isGrabbing = false;
     private bool wasGrabbing = false; // For detecting grab moment
+    private bool canGrab = false; // Must see open hand before allowing grab
     private float lastCatchTime = 0f;
     private Camera mainCamera;
 
@@ -485,14 +486,25 @@ public class HandTrackingCatcher : MonoBehaviour
 
         if (!useHandTracking || !handDetected || Time.timeScale == 0f)
         {
-            wasGrabbing = isGrabbing;
+            // Reset canGrab when hand is lost - must see open hand again
+            canGrab = false;
             return;
         }
 
-        // Check for fish catch ONLY when grab is initiated (hand closes)
-        if (isGrabbing && !wasGrabbing)
+        // If hand is currently open, allow grabbing
+        if (!isGrabbing)
+        {
+            canGrab = true;
+        }
+
+        // Check for fish catch ONLY when ALL conditions are met:
+        // 1. Hand is currently in grab position (isGrabbing)
+        // 2. We saw an open hand since last catch attempt (canGrab)
+        // 3. This is the moment of closing (transition from open to closed)
+        if (isGrabbing && canGrab && !wasGrabbing)
         {
             CheckForFishCatch();
+            canGrab = false; // Must open hand again before next catch
         }
 
         wasGrabbing = isGrabbing;
@@ -622,6 +634,7 @@ public class HandTrackingCatcher : MonoBehaviour
             handDetected = false;
             isGrabbing = false;
             wasGrabbing = false;
+            canGrab = false;
         }
         else
         {
@@ -630,6 +643,7 @@ public class HandTrackingCatcher : MonoBehaviour
             handDetected = false;
             isGrabbing = false;
             wasGrabbing = false;
+            canGrab = false;
         }
 
         if (grabCursor != null)

@@ -25,7 +25,6 @@
                 <ui:Label text="Create Account" style="color:white; font-size: 28px; -unity-font-style: bold; align-self: center; margin-bottom: 20px;" />
 
                 <ui:TextField label="Username" name="regUsername" class="game-input" />
-                <ui:TextField label="Email" name="regEmail" class="game-input" />
                 <ui:TextField label="First Name" name="regFirstName" class="game-input" />
                 <ui:TextField label="Last Name" name="regLastName" class="game-input" />
                 <ui:TextField label="Age" name="regAge" class="game-input" />

@@ -219,8 +219,7 @@ public class SessionStats : MonoBehaviour
 
     public float GetAccuracy()
     {
-        int total = correctFish + wrongFish;
-        return total == 0 ? 0f : (float)correctFish / total;
+        return totalHits == 0 ? 0f : (float)correctFish / totalHits;
     }
 
     public float GetHitEffectiveness()

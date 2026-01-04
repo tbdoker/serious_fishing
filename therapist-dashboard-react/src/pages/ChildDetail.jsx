@@ -71,7 +71,7 @@ export default function ChildDetail() {
 
   useEffect(() => {
     loadChildData();
-  }, [childId]);
+  }, [childId, handFilter]);
 
   const loadChildData = async () => {
     try {
@@ -79,7 +79,7 @@ export default function ChildDetail() {
         childrenAPI.getById(childId),
         sessionsAPI.getByChild(childId, 1, 50),
         progressAPI.get(childId),
-        heatmapAPI.get(childId),
+        heatmapAPI.get(childId, null, handFilter === 'all' ? null : handFilter),
       ]);
 
       if (childRes.ok) {
@@ -189,6 +189,13 @@ export default function ChildDetail() {
     return speed * (baseInterval / avgSpawn);
   };
 
+  const calculateNormalizedPerformance = (session) => {
+    const accuracy = session.fishAccuracy || 0;
+    const difficulty = calculateDifficulty(session);
+    if (difficulty <= 0) return accuracy;
+    return accuracy * difficulty;
+  };
+
   // Group sessions by time period
   const groupSessionsByTime = (sessionsData, grouping) => {
     if (grouping === 'session') {
@@ -232,6 +239,7 @@ export default function ChildDetail() {
       const sessions = group.sessions;
       const avgAccuracy = sessions.reduce((sum, s) => sum + (s.fishAccuracy || 0), 0) / sessions.length;
       const avgDifficulty = sessions.reduce((sum, s) => sum + calculateDifficulty(s), 0) / sessions.length;
+      const avgNormalized = sessions.reduce((sum, s) => sum + calculateNormalizedPerformance(s), 0) / sessions.length;
       const avgReactionTime = sessions.reduce((sum, s) => sum + (s.averageReactionTime || 0), 0) / sessions.length;
       const avgSpeed = sessions.reduce((sum, s) => sum + (s.gameSettings?.speedMultiplier || 1), 0) / sessions.length;
       const avgMinSpawn = sessions.reduce((sum, s) => sum + (s.gameSettings?.minSpawnInterval || 3), 0) / sessions.length;
@@ -242,6 +250,7 @@ export default function ChildDetail() {
         label: group.label,
         accuracy: avgAccuracy,
         difficulty: avgDifficulty,
+        normalizedPerformance: avgNormalized,
         reactionTime: avgReactionTime,
         speed: avgSpeed,
         minSpawnInterval: avgMinSpawn,
@@ -258,14 +267,37 @@ export default function ChildDetail() {
     return true;
   });
 
+  const orderedFilteredSessions = [...filteredSessions].sort(
+    (a, b) => new Date(a.sessionStartTime) - new Date(b.sessionStartTime)
+  );
+
+  const calculateImprovement = (sessionsData) => {
+    if (!sessionsData.length) return 0;
+    if (sessionsData.length >= 6) {
+      const first3 = sessionsData.slice(0, 3);
+      const last3 = sessionsData.slice(-3);
+      const firstAvg =
+        first3.reduce((sum, s) => sum + calculateNormalizedPerformance(s), 0) / 3;
+      const lastAvg =
+        last3.reduce((sum, s) => sum + calculateNormalizedPerformance(s), 0) / 3;
+      return lastAvg - firstAvg;
+    }
+    if (sessionsData.length >= 2) {
+      return (
+        calculateNormalizedPerformance(sessionsData[sessionsData.length - 1]) -
+        calculateNormalizedPerformance(sessionsData[0])
+      );
+    }
+    return 0;
+  };
+
   const getChartData = () => {
-    if (!filteredSessions.length) return null;
-    const orderedSessions = [...filteredSessions].sort(
-      (a, b) => new Date(a.sessionStartTime) - new Date(b.sessionStartTime)
-    );
-    const groups = groupSessionsByTime(orderedSessions, timeGrouping);
+    if (!orderedFilteredSessions.length) return null;
+    const groups = groupSessionsByTime(orderedFilteredSessions, timeGrouping);
     return aggregateGroupedData(groups);
   };
+
+  const improvementDelta = calculateImprovement(orderedFilteredSessions);
 
   const handleDeleteSession = async (sessionId) => {
     setDeletingSession(sessionId);
@@ -299,7 +331,7 @@ export default function ChildDetail() {
     },
   };
 
-  // Chart options for accuracy/difficulty
+  // Chart options for accuracy/difficulty/normalized performance
   const accuracyChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -311,10 +343,9 @@ export default function ChildDetail() {
     scales: {
       y: {
         beginAtZero: true,
-        max: 100,
         title: {
           display: true,
-          text: 'Accuracy %',
+          text: 'Accuracy / Normalized Performance',
         },
       },
       y1: {
@@ -384,6 +415,14 @@ export default function ChildDetail() {
             borderColor: '#00bcd4',
             backgroundColor: 'rgba(0, 188, 212, 0.1)',
             fill: true,
+            tension: 0.4,
+          },
+          {
+            label: 'Normalized Performance %',
+            data: chartData.map((d) => d.normalizedPerformance),
+            borderColor: '#4caf50',
+            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+            fill: false,
             tension: 0.4,
           },
           {
@@ -898,8 +937,8 @@ export default function ChildDetail() {
           </div>
         </div>
 
-        <div className="stat-card mini">
-          {(progress?.summary?.improvement || 0) >= 0 ? (
+                  <div className="stat-card mini">
+          {improvementDelta >= 0 ? (
             <TrendingUp size={20} className="text-success" />
           ) : (
             <TrendingDown size={20} className="text-error" />
@@ -907,11 +946,11 @@ export default function ChildDetail() {
           <div className="stat-content">
             <span
               className={`stat-value ${
-                (progress?.summary?.improvement || 0) >= 0 ? 'text-success' : 'text-error'
+                improvementDelta >= 0 ? 'text-success' : 'text-error'
               }`}
             >
-              {(progress?.summary?.improvement || 0) >= 0 ? '+' : ''}
-              {progress?.summary?.improvement || 0}%
+              {improvementDelta >= 0 ? '+' : ''}
+              {improvementDelta.toFixed(2)}%
             </span>
             <span className="stat-label">Improvement</span>
           </div>
@@ -984,7 +1023,7 @@ export default function ChildDetail() {
               <>
                 <div className="charts-grid">
                   <div className="chart-card card">
-                    <h3>Accuracy & Difficulty Over Time</h3>
+                    <h3>Accuracy, Normalized Performance & Difficulty</h3>
                     <div className="chart-container">
                       <Line data={progressChartData} options={accuracyChartOptions} />
                     </div>
@@ -1067,6 +1106,7 @@ export default function ChildDetail() {
                       <th>Hand</th>
                       <th>Accuracy</th>
                       <th>Difficulty</th>
+                      <th>Norm. Perf</th>
                       <th>Correct</th>
                       <th>Wrong</th>
                       <th>Missed</th>
@@ -1117,6 +1157,11 @@ export default function ChildDetail() {
                             {calculateDifficulty(session).toFixed(2)}
                           </span>
                         </td>
+                        <td>
+                          <span className="badge badge-primary">
+                            {calculateNormalizedPerformance(session).toFixed(2)}
+                          </span>
+                        </td>
                         <td className="text-success">{session.correctFish || 0}</td>
                         <td className="text-error">{session.wrongFish || 0}</td>
                         <td className="text-warning">{session.missedFish || 0}</td>
@@ -1159,10 +1204,23 @@ export default function ChildDetail() {
               <p className="text-gray-500 text-sm mb-4">
                 Visual representation of where the child clicks during gameplay.
               </p>
+              <div className="heatmap-filter-row">
+                <span className="grouping-label">Hand:</span>
+                <select
+                  className="form-select"
+                  value={handFilter}
+                  onChange={(e) => setHandFilter(e.target.value)}
+                >
+                  <option value="all">All</option>
+                  <option value="hand">Hand On</option>
+                  <option value="no-hand">Hand Off</option>
+                </select>
+              </div>
 
               {heatmapData?.clicks?.length > 0 ? (
                 <div className="heatmap-container">
                   <HeatmapVisualization data={heatmapData} />
+                  <QuadrantAccuracyGrid data={heatmapData} />
                 </div>
               ) : (
                 <div className="empty-state">
@@ -1635,6 +1693,13 @@ export default function ChildDetail() {
           padding: 1rem;
           min-height: 400px;
         }
+
+        .heatmap-filter-row {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+        }
       `}</style>
     </div>
   );
@@ -1828,6 +1893,90 @@ function HeatmapVisualization({ data }) {
             rgba(255, 0, 0, 0.95)
           );
           border-radius: 4px;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function QuadrantAccuracyGrid({ data }) {
+  const qa = data?.quadrantAccuracy;
+  if (!qa) {
+    return (
+      <div className="quadrant-card">
+        <h4>Quadrant Accuracy</h4>
+        <p className="text-gray-500 text-sm">No quadrant data available yet.</p>
+      </div>
+    );
+  }
+
+  const format = (value) => (value === null || value === undefined ? '—' : `${value}%`);
+
+  return (
+    <div className="quadrant-card">
+      <div className="quadrant-header">
+        <h4>Quadrant Accuracy</h4>
+        <span className="text-gray-500 text-sm">Correct % by screen area</span>
+      </div>
+      <div className="quadrant-grid">
+        <div className="quadrant-cell">
+          <span className="quadrant-label">Top Left</span>
+          <span className="quadrant-value">{format(qa.topLeft)}</span>
+        </div>
+        <div className="quadrant-cell">
+          <span className="quadrant-label">Top Right</span>
+          <span className="quadrant-value">{format(qa.topRight)}</span>
+        </div>
+        <div className="quadrant-cell">
+          <span className="quadrant-label">Bottom Left</span>
+          <span className="quadrant-value">{format(qa.bottomLeft)}</span>
+        </div>
+        <div className="quadrant-cell">
+          <span className="quadrant-label">Bottom Right</span>
+          <span className="quadrant-value">{format(qa.bottomRight)}</span>
+        </div>
+      </div>
+      <style>{`
+        .quadrant-card {
+          margin-top: 1rem;
+          padding: 1rem;
+          background: white;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow);
+        }
+
+        .quadrant-header {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          gap: 0.75rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .quadrant-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.75rem;
+        }
+
+        .quadrant-cell {
+          padding: 0.75rem;
+          border-radius: 10px;
+          background: var(--gray-100);
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
+
+        .quadrant-label {
+          font-size: 0.8rem;
+          color: var(--gray-600);
+        }
+
+        .quadrant-value {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: var(--gray-800);
         }
       `}</style>
     </div>

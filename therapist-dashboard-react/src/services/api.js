@@ -143,8 +143,10 @@ export const progressAPI = {
 
 // Heatmap API
 export const heatmapAPI = {
-  get: async (childId, sessionId = null) => {
-    const params = sessionId ? { sessionId } : {};
+  get: async (childId, sessionId = null, handFilter = null) => {
+    const params = {};
+    if (sessionId) params.sessionId = sessionId;
+    if (handFilter) params.hand = handFilter;
     const response = await api.get(`/api/therapist/children/${childId}/heatmap`, { params });
     return response.data;
   },
