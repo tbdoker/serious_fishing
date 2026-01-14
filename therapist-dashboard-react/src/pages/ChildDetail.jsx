@@ -179,6 +179,8 @@ export default function ChildDetail() {
     return sessions.reduce((total, session) => total + (session.sessionDuration || 0), 0);
   };
 
+  const MAX_DIFFICULTY = 24;
+
   // Calculate difficulty score based on settings
   const calculateDifficulty = (session) => {
     const speed = session.gameSettings?.speedMultiplier || 1.0;
@@ -186,14 +188,16 @@ export default function ChildDetail() {
     const maxSpawn = session.gameSettings?.maxSpawnInterval || 6.0;
     const avgSpawn = (minSpawn + maxSpawn) / 2;
     const baseInterval = 4.0; // Reference spawn interval
-    return speed * (baseInterval / avgSpawn);
+    const raw = speed * (baseInterval / avgSpawn);
+    return Math.max(0, Math.min(raw, MAX_DIFFICULTY));
   };
 
   const calculateNormalizedPerformance = (session) => {
     const accuracy = session.fishAccuracy || 0;
     const difficulty = calculateDifficulty(session);
-    if (difficulty <= 0) return accuracy;
-    return accuracy * difficulty;
+    if (MAX_DIFFICULTY <= 0) return accuracy;
+    const dnorm = difficulty / MAX_DIFFICULTY;
+    return accuracy * (0.5 + 0.5 * dnorm);
   };
 
   // Group sessions by time period
@@ -272,23 +276,20 @@ export default function ChildDetail() {
   );
 
   const calculateImprovement = (sessionsData) => {
-    if (!sessionsData.length) return 0;
-    if (sessionsData.length >= 6) {
-      const first3 = sessionsData.slice(0, 3);
-      const last3 = sessionsData.slice(-3);
-      const firstAvg =
-        first3.reduce((sum, s) => sum + calculateNormalizedPerformance(s), 0) / 3;
-      const lastAvg =
-        last3.reduce((sum, s) => sum + calculateNormalizedPerformance(s), 0) / 3;
-      return lastAvg - firstAvg;
-    }
-    if (sessionsData.length >= 2) {
-      return (
-        calculateNormalizedPerformance(sessionsData[sessionsData.length - 1]) -
-        calculateNormalizedPerformance(sessionsData[0])
-      );
-    }
-    return 0;
+    if (sessionsData.length < 2) return 0;
+    const normalized = sessionsData.map((s) => calculateNormalizedPerformance(s));
+    const count = normalized.length;
+    const meanX = (count - 1) / 2;
+    const meanY = normalized.reduce((sum, v) => sum + v, 0) / count;
+    const numerator = normalized.reduce(
+      (sum, y, i) => sum + (i - meanX) * (y - meanY),
+      0
+    );
+    const denominator = Array.from({ length: count }).reduce(
+      (sum, _, i) => sum + (i - meanX) ** 2,
+      0
+    );
+    return denominator ? numerator / denominator : 0;
   };
 
   const getChartData = () => {
@@ -298,6 +299,8 @@ export default function ChildDetail() {
   };
 
   const improvementDelta = calculateImprovement(orderedFilteredSessions);
+  const totalImprovement =
+    improvementDelta * Math.max(0, orderedFilteredSessions.length - 1);
 
   const handleDeleteSession = async (sessionId) => {
     setDeletingSession(sessionId);
@@ -353,7 +356,7 @@ export default function ChildDetail() {
         display: true,
         position: 'right',
         beginAtZero: true,
-        max: 3,
+        max: MAX_DIFFICULTY,
         grid: {
           drawOnChartArea: false,
         },
@@ -937,7 +940,7 @@ export default function ChildDetail() {
           </div>
         </div>
 
-                  <div className="stat-card mini">
+        <div className="stat-card mini">
           {improvementDelta >= 0 ? (
             <TrendingUp size={20} className="text-success" />
           ) : (
@@ -952,7 +955,36 @@ export default function ChildDetail() {
               {improvementDelta >= 0 ? '+' : ''}
               {improvementDelta.toFixed(2)}%
             </span>
-            <span className="stat-label">Improvement</span>
+            <span
+              className="stat-label"
+              title="Computed as the slope of a linear regression over normalized performance across all sessions. This reflects the overall performance trend rather than a simple before-and-after difference."
+            >
+              Improvement (trend per session)
+            </span>
+          </div>
+        </div>
+
+        <div className="stat-card mini">
+          {totalImprovement >= 0 ? (
+            <TrendingUp size={20} className="text-success" />
+          ) : (
+            <TrendingDown size={20} className="text-error" />
+          )}
+          <div className="stat-content">
+            <span
+              className={`stat-value ${
+                totalImprovement >= 0 ? 'text-success' : 'text-error'
+              }`}
+            >
+              {totalImprovement >= 0 ? '+' : ''}
+              {totalImprovement.toFixed(2)}%
+            </span>
+            <span
+              className="stat-label"
+              title="Total Improvement = beta1 * (N - 1). beta1 is the trend per session, N is the number of sessions. Why (N - 1)? Session 1 is the baseline; improvement happens between sessions."
+            >
+              Total Improvement
+            </span>
           </div>
         </div>
       </div>

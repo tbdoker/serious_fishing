@@ -127,8 +127,8 @@
     <Compile Include="Assets/Scripts/Game/GameSettingsManager.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/CameraController.cs" />
     <Compile Include="Assets/MediaPipeUnity/Samples/Common/Scripts/ImageSource/VideoSource.cs" />
-    <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/Benchmark03.cs" />
     <Compile Include="Assets/Scripts/Audio/AudioManager.cs" />
+    <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/Benchmark03.cs" />
     <Compile Include="Assets/MediaPipeUnity/Samples/Scenes/Hand Landmark Detection/HandLandmarkerRunner.cs" />
     <Compile Include="Assets/MediaPipeUnity/Samples/Scenes/Face Landmark Detection/FaceLandmarkerRunner.cs" />
     <Compile Include="Assets/Scripts/Network/SessionDTO.cs" />

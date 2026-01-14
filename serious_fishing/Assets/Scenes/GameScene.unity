@@ -629,6 +629,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 333727377}
   m_CullTransparentMesh: 1
+--- !u!1 &447967810
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 447967812}
+  - component: {fileID: 447967811}
+  m_Layer: 0
+  m_Name: Bootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &447967811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447967810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4d846393f8d9f20fa64b924b0d95e68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mediapipe.Unity.Sample.Bootstrap
+  _appSettings: {fileID: 11400000, guid: c1dea6c0f46f82342ac6b11989a0fb74, type: 2}
+--- !u!4 &447967812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447967810}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 576.68677, y: 437.4046, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1438,6 +1483,7 @@ Transform:
   - {fileID: 1977781723}
   - {fileID: 2120376623}
   - {fileID: 134126166}
+  - {fileID: 2068784113}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1268868548
@@ -1479,6 +1525,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SessionUploader
   backendBaseUrl: http://127.0.0.1:5001
   gameSettings: {fileID: 11400000, guid: 81687c788971b6b419b98cf73f50bf1f, type: 2}
+  handTrackingCatcher: {fileID: 0}
 --- !u!1 &1329717343
 GameObject:
   m_ObjectHideFlags: 0
@@ -1793,6 +1840,8 @@ MonoBehaviour:
   gameRoot: {fileID: 1268868546}
   menuFishSpawner: {fileID: 0}
   gameSettings: {fileID: 11400000, guid: 81687c788971b6b419b98cf73f50bf1f, type: 2}
+  handTrackingCatcher: {fileID: 0}
+  audioManager: {fileID: 0}
 --- !u!114 &1418805826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1806,6 +1855,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameSettingsManager
   gameSettings: {fileID: 11400000, guid: 81687c788971b6b419b98cf73f50bf1f, type: 2}
+  handTrackingCatcher: {fileID: 0}
+  audioManager: {fileID: 0}
   backendBaseUrl: http://127.0.0.1:5001
   pollInterval: 1
 --- !u!1 &1432912314
@@ -2209,6 +2260,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1824577420
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1824577422}
+  - component: {fileID: 1824577421}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1824577421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824577420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7affee47279c4041ab32d939b8824b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  musicSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  menuSource: {fileID: 0}
+  vfxSource: {fileID: 0}
+  backgroundMusic: {fileID: 8300000, guid: 6d18f3778973542f4b500d9be05ad861, type: 3}
+  correctFishClip: {fileID: 8300000, guid: cb42fd97637ff48a9b36b4adc4d3e59e, type: 3}
+  wrongFishClip: {fileID: 8300000, guid: da589770b97b841ebb2b08224e5cd111, type: 3}
+  menuClickClip: {fileID: 8300000, guid: cb42fd97637ff48a9b36b4adc4d3e59e, type: 3}
+  vfxClip: {fileID: 0}
+  musicVolume: 0.6
+  correctFishVolume: 1
+  wrongFishVolume: 1
+  menuVolume: 0.8
+--- !u!4 &1824577422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824577420}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 576.68677, y: 437.4046, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1977781721
 GameObject:
   m_ObjectHideFlags: 0
@@ -2292,6 +2400,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backendBaseUrl: http://127.0.0.1:5001
   gameSettings: {fileID: 11400000, guid: 81687c788971b6b419b98cf73f50bf1f, type: 2}
+  handTrackingCatcher: {fileID: 0}
 --- !u!1 &1978553092
 GameObject:
   m_ObjectHideFlags: 0
@@ -2367,6 +2476,101 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978553092}
   m_CullTransparentMesh: 1
+--- !u!1 &2068784112
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2068784113}
+  - component: {fileID: 2068784115}
+  - component: {fileID: 2068784114}
+  - component: {fileID: 2068784116}
+  m_Layer: 0
+  m_Name: HandTracking
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2068784113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068784112}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1268868547}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2068784114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068784112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827c4431af677e057aa6f14170d0785c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mediapipe.Unity.Screen
+  _screen: {fileID: 0}
+--- !u!114 &2068784115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068784112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6fe06a979ec549fd99d0582ec0bc9a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameHandLandmarkerRunner
+  _bootstrapPrefab: {fileID: 447967810}
+  screen: {fileID: 2068784114}
+  runningMode: 0
+  _handLandmarkerResultAnnotationController: {fileID: 0}
+  handTrackingCatcher: {fileID: 2068784116}
+  OnHandLandmarkDetected:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2068784116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068784112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a697d3971005640bead6a4a18c7696e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandTrackingCatcher
+  useHandTracking: 1
+  handIndexToUse: 0
+  movementSensitivity: 1.5
+  showHandSkeleton: 1
+  normalizeHandSize: 1
+  handSize: 5
+  jointSize: 7
+  lineWidth: 1
+  handOpenColor: {r: 1, g: 1, b: 1, a: 1}
+  handClosedColor: {r: 0, g: 1, b: 0, a: 1}
+  showGrabCursor: 1
+  cursorSize: 3
+  cursorOpenColor: {r: 1, g: 1, b: 1, a: 0.3}
+  cursorClosedColor: {r: 0, g: 1, b: 0, a: 0.6}
+  grabThreshold: 0
+  catchCooldown: 0
 --- !u!1 &2120376621
 GameObject:
   m_ObjectHideFlags: 0
@@ -2407,7 +2611,7 @@ Transform:
   m_GameObject: {fileID: 2120376621}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -410.52536, y: -124.29216, z: 0}
+  m_LocalPosition: {x: -410.5254, y: -124.292175, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2531,3 +2735,5 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 1418805824}
   - {fileID: 1268868547}
+  - {fileID: 447967812}
+  - {fileID: 1824577422}

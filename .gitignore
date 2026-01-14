@@ -9,6 +9,18 @@ serious_fishing/Builds/
 serious_fishing/obj/
 serious_fishing/MemoryCaptures/
 
+# Unity auto-generated project files (don't commit these)
+*.csproj
+*.sln
+*.unityproj
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
 # MediaPipe (large native libraries, install separately)
 serious_fishing/Packages/com.github.homuler.mediapipe/
 serious_fishing/Assets/MediaPipeUnity/
@@ -88,3 +100,4 @@ yarn-error.log*
 
 #Final Report
 ENS491_492_Final_Report.tex
+figures/
