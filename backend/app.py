@@ -937,7 +937,7 @@ def get_child_progress(child_id):
     total_wrong = sum(s.get("wrongFish", 0) for s in sessions)
     total_time = sum(s.get("sessionDuration", 0) for s in sessions)
 
-    MAX_DIFFICULTY = 24.0
+    MAX_DIFFICULTY = 12.0
 
     def calc_difficulty(session):
         settings = session.get("gameSettings", {}) or {}
