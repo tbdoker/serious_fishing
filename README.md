@@ -344,19 +344,6 @@ This repository contains the **source code** for all three components. To review
 3. **Testing the System**: Follow "Quick Start" to run all components
 
 If you'd like a **pre-built executable** of the Unity game, please request one separately as builds are excluded from version control.
-
-## 📄 License
-
-This project is part of an academic course (ENS491/492).
-
-## 👥 Contributors
-
-Developed as part of the ENS491/492 Final Project.
-
-## 📧 Support
-
-For questions or issues, please refer to the course instructor or create an issue in the repository.
-
 ---
 
 **Last Updated**: January 2026
