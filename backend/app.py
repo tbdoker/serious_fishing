@@ -15,7 +15,7 @@ DB_NAME = "serious_fishing"
 JWT_SECRET = "serious_fishing_secret_key_2024"  
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"])
+CORS(app, supports_credentials=True)
 
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
