@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520">
+  <defs>
+    <marker id="seq-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#333"/>
+    </marker>
+    <marker id="seq-arrow-return" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+      <polygon points="8 0, 0 3, 8 6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="520" fill="white"/>
+
+  <!-- Title -->
+  <text x="450" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">Sequence Diagram: Fish Catch Attempt</text>
+
+  <!-- Actor boxes -->
+  <rect x="40" y="45" width="80" height="35" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="80" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">FishSpawner</text>
+
+  <rect x="170" y="45" width="80" height="35" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+  <text x="210" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">Fish</text>
+
+  <rect x="300" y="45" width="80" height="35" rx="4" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="340" y="62" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Input</text>
+  <text x="340" y="74" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">(Click/Hand)</text>
+
+  <rect x="430" y="45" width="80" height="35" rx="4" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5"/>
+  <text x="470" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">FishCatcher</text>
+
+  <rect x="560" y="45" width="80" height="35" rx="4" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+  <text x="600" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">SessionStats</text>
+
+  <rect x="690" y="45" width="90" height="35" rx="4" fill="#e0f7fa" stroke="#00838f" stroke-width="1.5"/>
+  <text x="735" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">GameManager</text>
+
+  <rect x="820" y="45" width="60" height="35" rx="4" fill="#fff8e1" stroke="#ffa000" stroke-width="1.5"/>
+  <text x="850" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">Audio</text>
+
+  <!-- Lifelines -->
+  <line x1="80" y1="80" x2="80" y2="490" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+  <line x1="210" y1="80" x2="210" y2="490" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+  <line x1="340" y1="80" x2="340" y2="490" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+  <line x1="470" y1="80" x2="470" y2="490" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+  <line x1="600" y1="80" x2="600" y2="490" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+  <line x1="735" y1="80" x2="735" y2="490" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+  <line x1="850" y1="80" x2="850" y2="490" stroke="#999" stroke-width="1" stroke-dasharray="5,3"/>
+
+  <!-- Activation boxes -->
+  <rect x="75" y="105" width="10" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="1"/>
+  <rect x="205" y="115" width="10" height="200" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <rect x="335" y="180" width="10" height="30" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <rect x="465" y="225" width="10" height="160" fill="#fce4ec" stroke="#c2185b" stroke-width="1"/>
+  <rect x="595" y="265" width="10" height="40" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1"/>
+  <rect x="730" y="325" width="10" height="80" fill="#e0f7fa" stroke="#00838f" stroke-width="1"/>
+  <rect x="845" y="425" width="10" height="30" fill="#fff8e1" stroke="#ffa000" stroke-width="1"/>
+
+  <!-- Messages -->
+  <!-- 1. Spawn fish -->
+  <line x1="85" y1="115" x2="200" y2="115" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow)"/>
+  <text x="142" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">SpawnFish()</text>
+  <rect x="125" y="120" width="100" height="20" rx="2" fill="#fffde7" stroke="#fbc02d" stroke-width="1"/>
+  <text x="175" y="134" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">Store spawnTime</text>
+
+  <!-- 2. Fish moves -->
+  <rect x="165" y="150" width="90" height="20" rx="2" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="210" y="164" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">FishMovement</text>
+
+  <!-- 3. Player input -->
+  <line x1="340" y1="195" x2="215" y2="195" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow-return)"/>
+  <text x="277" y="188" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Raycast hit / Grab</text>
+
+  <!-- 4. Call OnClick -->
+  <line x1="345" y1="230" x2="460" y2="230" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow)"/>
+  <text x="402" y="223" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">OnClick()</text>
+
+  <!-- 5. Calculate reaction time -->
+  <rect x="360" y="245" width="100" height="30" rx="2" fill="#fffde7" stroke="#fbc02d" stroke-width="1"/>
+  <text x="410" y="259" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">reactionTime =</text>
+  <text x="410" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">now - spawnTime</text>
+
+  <!-- 6. Update stats -->
+  <line x1="475" y1="285" x2="590" y2="285" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow)"/>
+  <text x="532" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">OnFishClickAttempt()</text>
+  <rect x="510" y="290" width="85" height="30" rx="2" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1"/>
+  <text x="552" y="304" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">Update counters</text>
+  <text x="552" y="315" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">Store click position</text>
+
+  <!-- 7. Check correct -->
+  <rect x="380" y="335" width="85" height="30" rx="2" fill="#fffde7" stroke="#fbc02d" stroke-width="1"/>
+  <text x="422" y="349" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">isCorrect =</text>
+  <text x="422" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">fish == target?</text>
+
+  <!-- 8. Update score -->
+  <line x1="475" y1="375" x2="725" y2="375" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow)"/>
+  <text x="600" y="368" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">[if correct] IncreaseScore()</text>
+
+  <!-- 9. Show feedback -->
+  <line x1="475" y1="395" x2="725" y2="395" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow)"/>
+  <text x="600" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">ShowFeedback()</text>
+
+  <!-- 10. Play sound -->
+  <line x1="475" y1="435" x2="840" y2="435" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow)"/>
+  <text x="657" y="428" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">PlayCorrectFish() / PlayWrongFish()</text>
+
+  <!-- 11. Destroy fish -->
+  <line x1="470" y1="470" x2="215" y2="470" stroke="#333" stroke-width="1.5" marker-end="url(#seq-arrow-return)"/>
+  <text x="342" y="463" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Destroy(gameObject)</text>
+
+  <!-- Time indicator -->
+  <line x1="25" y1="100" x2="25" y2="480" stroke="#ccc" stroke-width="1"/>
+  <polygon points="25,480 20,470 30,470" fill="#ccc"/>
+  <text x="15" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#999" transform="rotate(-90 15 290)">Time</text>
+
+  <!-- Notes -->
+  <text x="450" y="505" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">All metrics (reaction time, click position, correctness) are logged by SessionStats for later upload</text>
+</svg>

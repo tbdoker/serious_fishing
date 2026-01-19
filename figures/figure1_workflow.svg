@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 220">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#388e3c"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="220" fill="white"/>
+
+  <!-- Title -->
+  <text x="400" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">Gameplay Workflow</text>
+
+  <!-- Boxes -->
+  <!-- Login -->
+  <rect x="30" y="70" width="100" height="50" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="80" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Login/</text>
+  <text x="80" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Register</text>
+
+  <!-- Load Settings -->
+  <rect x="180" y="70" width="100" height="50" rx="5" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="230" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Load</text>
+  <text x="230" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Settings</text>
+
+  <!-- Play Session -->
+  <rect x="330" y="70" width="100" height="50" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="380" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Play</text>
+  <text x="380" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Session</text>
+
+  <!-- Upload -->
+  <rect x="480" y="70" width="100" height="50" rx="5" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+  <text x="530" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Upload</text>
+  <text x="530" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Session</text>
+
+  <!-- Review -->
+  <rect x="630" y="70" width="100" height="50" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="680" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Therapist</text>
+  <text x="680" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Review</text>
+
+  <!-- Main flow arrows -->
+  <line x1="130" y1="95" x2="175" y2="95" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="280" y1="95" x2="325" y2="95" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="430" y1="95" x2="475" y2="95" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="580" y1="95" x2="625" y2="95" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Real-time sync loop (polling - below) -->
+  <path d="M 380 125 Q 380 160 305 160 Q 230 160 230 125" fill="none" stroke="#666" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <polygon points="230,125 225,135 235,135" fill="#666"/>
+  <text x="305" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Real-time settings sync (polling)</text>
+
+  <!-- Settings update loop (therapist to backend - above) -->
+  <path d="M 680 65 Q 680 42 455 42 Q 230 42 230 65" fill="none" stroke="#388e3c" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <polygon points="230,65 225,55 235,55" fill="#388e3c"/>
+  <text x="455" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#388e3c">Therapist updates settings</text>
+
+  <!-- Labels -->
+  <text x="80" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">Unity Client</text>
+  <text x="230" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">Backend API</text>
+  <text x="380" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">Unity Client</text>
+  <text x="530" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">Backend API</text>
+  <text x="680" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">Dashboard</text>
+</svg>

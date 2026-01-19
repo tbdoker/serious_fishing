@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450">
+  <defs>
+    <marker id="flow-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+    <marker id="flow-arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1976d2"/>
+    </marker>
+    <marker id="flow-arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#388e3c"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="450" fill="white"/>
+
+  <!-- Title -->
+  <text x="450" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">Data Flow: Session Upload &amp; Settings Sync</text>
+
+  <!-- Unity Client Section -->
+  <rect x="20" y="50" width="280" height="340" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="160" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1976d2">Unity Client</text>
+
+  <!-- Game Events -->
+  <rect x="40" y="95" width="100" height="45" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="90" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Game Events</text>
+  <text x="90" y="128" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">clicks, catches</text>
+
+  <!-- SessionStats -->
+  <rect x="160" y="95" width="120" height="45" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="220" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">SessionStats</text>
+  <text x="220" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">accumulates data</text>
+
+  <!-- Arrow from events to stats -->
+  <line x1="140" y1="117" x2="155" y2="117" stroke="#333" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+  <!-- Metrics computed -->
+  <rect x="40" y="155" width="240" height="70" rx="4" fill="#fff8e1" stroke="#ffa000" stroke-width="1"/>
+  <text x="160" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#333">Computed Metrics</text>
+  <text x="75" y="188" font-family="Arial, sans-serif" font-size="9" fill="#333">• correctFish, wrongFish</text>
+  <text x="75" y="200" font-family="Arial, sans-serif" font-size="9" fill="#333">• averageReactionTime</text>
+  <text x="75" y="212" font-family="Arial, sans-serif" font-size="9" fill="#333">• fishAccuracy</text>
+  <text x="180" y="188" font-family="Arial, sans-serif" font-size="9" fill="#333">• clickPositions[]</text>
+  <text x="180" y="200" font-family="Arial, sans-serif" font-size="9" fill="#333">• quadrantAccuracy</text>
+
+  <!-- Arrow from stats to metrics -->
+  <line x1="220" y1="140" x2="220" y2="150" stroke="#333" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+  <!-- JSON Payload -->
+  <rect x="40" y="240" width="240" height="50" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="160" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#333">Session JSON Payload</text>
+  <text x="160" y="273" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">userId, settings snapshot, metrics</text>
+
+  <!-- Arrow from metrics to JSON -->
+  <line x1="160" y1="225" x2="160" y2="235" stroke="#333" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+  <!-- Settings Receiver -->
+  <rect x="40" y="305" width="240" height="45" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="160" y="322" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">GameSettingsManager</text>
+  <text x="160" y="337" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">polls settings (every 5s)</text>
+
+  <!-- Backend Section -->
+  <rect x="340" y="50" width="200" height="340" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="440" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#388e3c">Flask Backend</text>
+
+  <!-- Session API Endpoint -->
+  <rect x="360" y="95" width="160" height="40" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="440" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Session API</text>
+  <text x="440" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">POST /save-session</text>
+
+  <!-- MongoDB -->
+  <ellipse cx="440" cy="195" rx="70" ry="35" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="440" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">MongoDB</text>
+  <text x="440" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">sessions, settings</text>
+
+  <!-- Arrow from Session API to MongoDB (write sessions) -->
+  <line x1="440" y1="135" x2="440" y2="155" stroke="#1976d2" stroke-width="1.5" marker-end="url(#flow-arrow-blue)"/>
+
+  <!-- Reporting API -->
+  <rect x="360" y="250" width="160" height="50" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="440" y="268" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Reporting Endpoints</text>
+  <text x="440" y="283" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">GET /sessions, /progress</text>
+
+  <!-- Settings API -->
+  <rect x="360" y="315" width="160" height="50" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="440" y="333" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Settings API</text>
+  <text x="440" y="348" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">GET/PUT /settings</text>
+
+  <!-- Arrow from MongoDB to Reporting (read sessions) -->
+  <line x1="455" y1="230" x2="455" y2="245" stroke="#1976d2" stroke-width="1.5" marker-end="url(#flow-arrow-blue)"/>
+
+  <!-- Arrow from MongoDB to Settings API (read settings - left side) -->
+  <path d="M 385 215 L 365 215 L 365 340 L 355 340" fill="none" stroke="#388e3c" stroke-width="1.5" marker-end="url(#flow-arrow-green)"/>
+
+  <!-- Arrow from Settings API to MongoDB (write settings - right side) -->
+  <path d="M 525 340 L 515 340 L 515 215 L 495 215" fill="none" stroke="#388e3c" stroke-width="1.5" marker-end="url(#flow-arrow-green)"/>
+
+  <!-- Dashboard Section -->
+  <rect x="580" y="50" width="300" height="340" rx="8" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+  <text x="730" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#c2185b">Therapist Dashboard (React)</text>
+
+  <!-- Session Table -->
+  <rect x="600" y="95" width="120" height="45" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="660" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Session Table</text>
+  <text x="660" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">history, metrics</text>
+
+  <!-- Charts -->
+  <rect x="740" y="95" width="120" height="45" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="800" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Trend Charts</text>
+  <text x="800" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">accuracy, RT</text>
+
+  <!-- Heatmap -->
+  <rect x="600" y="155" width="120" height="45" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="660" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Heatmap</text>
+  <text x="660" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">click distribution</text>
+
+  <!-- Progress -->
+  <rect x="740" y="155" width="120" height="45" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="800" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Progress View</text>
+  <text x="800" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">normalized perf</text>
+
+  <!-- Settings Editor -->
+  <rect x="600" y="215" width="260" height="55" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="730" y="233" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#333">Settings Editor</text>
+  <text x="730" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">fish speed, spawn interval, target fish</text>
+  <text x="730" y="261" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#666">therapist adjusts difficulty in real-time</text>
+
+  <!-- Derived Metrics Box -->
+  <rect x="600" y="285" width="260" height="80" rx="4" fill="#fff8e1" stroke="#ffa000" stroke-width="1"/>
+  <text x="730" y="302" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#333">Dashboard-Computed Metrics</text>
+  <text x="630" y="318" font-family="Arial, sans-serif" font-size="9" fill="#333">• difficulty score</text>
+  <text x="630" y="332" font-family="Arial, sans-serif" font-size="9" fill="#333">• normalized performance</text>
+  <text x="630" y="346" font-family="Arial, sans-serif" font-size="9" fill="#333">• improvement trends</text>
+  <text x="780" y="318" font-family="Arial, sans-serif" font-size="9" fill="#333">• filtered views</text>
+  <text x="780" y="332" font-family="Arial, sans-serif" font-size="9" fill="#333">• hand vs mouse</text>
+
+  <!-- External flow arrows -->
+  <!-- Unity to Backend (Session Upload) -->
+  <line x1="280" y1="265" x2="335" y2="265" stroke="#1976d2" stroke-width="2" marker-end="url(#flow-arrow-blue)"/>
+  <text x="307" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#1976d2">POST</text>
+
+  <!-- Backend to Dashboard (Sessions) -->
+  <line x1="520" y1="275" x2="575" y2="275" stroke="#1976d2" stroke-width="2" marker-end="url(#flow-arrow-blue)"/>
+  <text x="547" y="268" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#1976d2">GET</text>
+
+  <!-- Dashboard to Backend (Settings Update) -->
+  <line x1="595" y1="240" x2="525" y2="340" stroke="#388e3c" stroke-width="2" marker-end="url(#flow-arrow-green)"/>
+  <text x="570" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#388e3c">PUT</text>
+
+  <!-- Backend to Unity (Settings Polling) -->
+  <line x1="355" y1="340" x2="285" y2="327" stroke="#388e3c" stroke-width="2" marker-end="url(#flow-arrow-green)"/>
+  <text x="320" y="323" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#388e3c">GET</text>
+
+  <!-- Legend -->
+  <rect x="20" y="405" width="860" height="35" rx="3" fill="#fafafa" stroke="#ddd" stroke-width="1"/>
+  <line x1="40" y1="422" x2="70" y2="422" stroke="#1976d2" stroke-width="2" marker-end="url(#flow-arrow-blue)"/>
+  <text x="80" y="426" font-family="Arial, sans-serif" font-size="9" fill="#333">Session data</text>
+  <line x1="170" y1="422" x2="200" y2="422" stroke="#388e3c" stroke-width="2" marker-end="url(#flow-arrow-green)"/>
+  <text x="210" y="426" font-family="Arial, sans-serif" font-size="9" fill="#333">Settings sync</text>
+  <line x1="310" y1="422" x2="340" y2="422" stroke="#333" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+  <text x="350" y="426" font-family="Arial, sans-serif" font-size="9" fill="#333">Internal flow</text>
+  <rect x="440" y="416" width="15" height="12" rx="1" fill="#fff8e1" stroke="#ffa000" stroke-width="1"/>
+  <text x="460" y="426" font-family="Arial, sans-serif" font-size="9" fill="#333">Computed metrics</text>
+  <rect x="580" y="416" width="15" height="12" rx="1" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="600" y="426" font-family="Arial, sans-serif" font-size="9" fill="#333">Settings components</text>
+</svg>
