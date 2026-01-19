@@ -1,0 +1,15 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Unity Package Cache
+Packages/packages-lock.json
+
+# OS
+.DS_Store
+node_modules
