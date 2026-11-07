@@ -1,0 +1,257 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700">
+  <defs>
+    <marker id="arch-arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#555"/>
+    </marker>
+    <marker id="arch-arr-rev" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="10 0, 0 3.5, 10 7" fill="#555"/>
+    </marker>
+    <marker id="arch-arr-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1976d2"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="700" fill="#fafafa"/>
+
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">System Architecture: Serious Fishing Game</text>
+
+  <!-- ==================== CLIENT TIER ==================== -->
+  <rect x="20" y="60" width="450" height="380" rx="12" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="245" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1976d2">Client Tier</text>
+
+  <!-- Unity Game Client -->
+  <rect x="40" y="100" width="410" height="320" rx="8" fill="white" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="245" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#333">Unity Game Client</text>
+  <text x="245" y="142" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">C# / Unity 2022.3 LTS</text>
+
+  <!-- Presentation Layer -->
+  <rect x="55" y="155" width="380" height="70" rx="5" fill="#e0f7fa" stroke="#00838f" stroke-width="1"/>
+  <text x="245" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#00838f">Presentation Layer (UI Toolkit)</text>
+
+  <rect x="70" y="185" width="70" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="105" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">Login/Reg</text>
+
+  <rect x="150" y="185" width="70" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="185" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">Settings</text>
+
+  <rect x="230" y="185" width="70" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="265" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">Pause Menu</text>
+
+  <rect x="310" y="185" width="110" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="365" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">Game HUD</text>
+
+  <!-- Game Logic Layer -->
+  <rect x="55" y="235" width="185" height="90" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="147" y="253" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#f57c00">Game Logic</text>
+
+  <rect x="65" y="263" width="75" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="102" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">GameManager</text>
+
+  <rect x="150" y="263" width="75" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="187" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">FishSpawner</text>
+
+  <rect x="65" y="293" width="75" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="102" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">FishCatcher</text>
+
+  <rect x="150" y="293" width="75" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="187" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">FishMovement</text>
+
+  <!-- Input Layer -->
+  <rect x="250" y="235" width="185" height="90" rx="5" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="342" y="253" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#388e3c">Input Layer</text>
+
+  <rect x="260" y="263" width="80" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="300" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">ClickDetector</text>
+
+  <rect x="350" y="263" width="80" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="390" y="276" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333">HandTracking</text>
+  <text x="390" y="286" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333">Catcher</text>
+
+  <rect x="305" y="293" width="80" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="345" y="306" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333">GameHand</text>
+  <text x="345" y="316" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333">LandmarkerRunner</text>
+
+  <!-- Data/Network Layer -->
+  <rect x="55" y="335" width="380" height="70" rx="5" fill="#fce4ec" stroke="#c2185b" stroke-width="1"/>
+  <text x="245" y="353" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#c2185b">Data &amp; Network Layer</text>
+
+  <rect x="70" y="363" width="85" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="112" y="382" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">SessionStats</text>
+
+  <rect x="165" y="363" width="85" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="207" y="378" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333">SessionUploader</text>
+  <text x="207" y="388" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#666">(UnityWebRequest)</text>
+
+  <rect x="260" y="363" width="85" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="302" y="378" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333">GameSettings</text>
+  <text x="302" y="388" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#333">Manager</text>
+
+  <rect x="355" y="363" width="70" height="30" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="390" y="382" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">AuthManager</text>
+
+  <!-- ==================== EXTERNAL HARDWARE ==================== -->
+  <rect x="20" y="460" width="200" height="100" rx="8" fill="#fff8e1" stroke="#ffa000" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="120" y="485" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#ffa000">External Input</text>
+
+  <rect x="35" y="500" width="70" height="40" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="70" y="518" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">Webcam</text>
+  <text x="70" y="530" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#666">USB/Built-in</text>
+
+  <rect x="115" y="500" width="90" height="40" rx="4" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="160" y="518" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">MediaPipe</text>
+  <text x="160" y="530" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#666">Hand Landmarker</text>
+
+  <!-- Arrow from Webcam to MediaPipe -->
+  <line x1="105" y1="520" x2="110" y2="520" stroke="#555" stroke-width="1.5" marker-end="url(#arch-arr)"/>
+
+  <!-- Arrow from MediaPipe to Unity -->
+  <line x1="160" y1="500" x2="160" y2="460" stroke="#555" stroke-width="1.5"/>
+  <line x1="160" y1="460" x2="342" y2="460" stroke="#555" stroke-width="1.5"/>
+  <line x1="342" y1="460" x2="342" y2="430" stroke="#555" stroke-width="1.5" marker-end="url(#arch-arr)"/>
+  <text x="250" y="455" font-family="Arial, sans-serif" font-size="8" fill="#666">hand landmarks</text>
+
+  <!-- ==================== SERVER TIER ==================== -->
+  <rect x="530" y="60" width="220" height="380" rx="12" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="640" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#388e3c">Server Tier</text>
+
+  <!-- Flask Backend -->
+  <rect x="545" y="100" width="190" height="320" rx="8" fill="white" stroke="#388e3c" stroke-width="1.5"/>
+  <text x="640" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#333">Flask Backend</text>
+  <text x="640" y="142" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">Python / Flask / Gunicorn</text>
+
+  <!-- API Layer -->
+  <rect x="555" y="155" width="170" height="120" rx="5" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="640" y="173" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#388e3c">REST API Endpoints</text>
+
+  <rect x="565" y="183" width="70" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="600" y="199" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">/auth/*</text>
+
+  <rect x="645" y="183" width="70" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="680" y="199" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">/settings/*</text>
+
+  <rect x="565" y="213" width="70" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="600" y="229" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">/sessions/*</text>
+
+  <rect x="645" y="213" width="70" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="680" y="229" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">/users/*</text>
+
+  <rect x="565" y="243" width="150" height="25" rx="3" fill="white" stroke="#666" stroke-width="1"/>
+  <text x="640" y="259" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#333">/progress/* (reporting)</text>
+
+  <!-- Business Logic -->
+  <rect x="555" y="285" width="170" height="60" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="640" y="303" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#f57c00">Business Logic</text>
+
+  <text x="575" y="323" font-family="Arial, sans-serif" font-size="8" fill="#333">• JWT Authentication</text>
+  <text x="575" y="336" font-family="Arial, sans-serif" font-size="8" fill="#333">• Session validation</text>
+
+  <!-- Data Access -->
+  <rect x="555" y="355" width="170" height="55" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1"/>
+  <text x="640" y="373" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#7b1fa2">Data Access Layer</text>
+  <text x="640" y="393" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">PyMongo Driver</text>
+
+  <!-- ==================== DATA TIER ==================== -->
+  <rect x="780" y="60" width="200" height="200" rx="12" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="880" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#e65100">Data Tier</text>
+
+  <!-- MongoDB -->
+  <rect x="795" y="100" width="170" height="145" rx="8" fill="white" stroke="#e65100" stroke-width="1.5"/>
+
+  <ellipse cx="880" cy="130" rx="70" ry="20" fill="#fff3e0" stroke="#e65100" stroke-width="1"/>
+  <text x="880" y="135" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#333">MongoDB</text>
+
+  <rect x="810" y="160" width="140" height="75" rx="4" fill="#fafafa" stroke="#ddd" stroke-width="1"/>
+  <text x="830" y="180" font-family="Arial, sans-serif" font-size="9" fill="#333">Collections:</text>
+  <text x="830" y="195" font-family="Arial, sans-serif" font-size="8" fill="#666">• users</text>
+  <text x="830" y="208" font-family="Arial, sans-serif" font-size="8" fill="#666">• sessions</text>
+  <text x="830" y="221" font-family="Arial, sans-serif" font-size="8" fill="#666">• settings</text>
+
+  <!-- ==================== WEB CLIENT ==================== -->
+  <rect x="780" y="280" width="200" height="160" rx="12" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+  <text x="880" y="305" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#c2185b">Web Client</text>
+
+  <!-- React Dashboard -->
+  <rect x="795" y="320" width="170" height="105" rx="8" fill="white" stroke="#c2185b" stroke-width="1.5"/>
+  <text x="880" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">React Dashboard</text>
+  <text x="880" y="362" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#666">JavaScript / React / Chart.js</text>
+
+  <text x="815" y="385" font-family="Arial, sans-serif" font-size="8" fill="#333">• Patient management</text>
+  <text x="815" y="398" font-family="Arial, sans-serif" font-size="8" fill="#333">• Session analytics</text>
+  <text x="815" y="411" font-family="Arial, sans-serif" font-size="8" fill="#333">• Settings control</text>
+
+  <!-- ==================== CONNECTIONS ==================== -->
+
+  <!-- Unity to Flask (HTTP) -->
+  <line x1="450" y1="380" x2="540" y2="380" stroke="#1976d2" stroke-width="3"/>
+  <polygon points="535,375 545,380 535,385" fill="#1976d2"/>
+  <polygon points="455,375 445,380 455,385" fill="#1976d2"/>
+  <rect x="465" y="365" width="60" height="30" rx="4" fill="white" stroke="#1976d2" stroke-width="1"/>
+  <text x="495" y="382" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1976d2">HTTP</text>
+  <text x="495" y="392" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#666">REST/JSON</text>
+
+  <!-- Flask to MongoDB -->
+  <line x1="735" y1="380" x2="735" y2="175" stroke="#e65100" stroke-width="2"/>
+  <line x1="735" y1="175" x2="790" y2="175" stroke="#e65100" stroke-width="2" marker-end="url(#arch-arr)"/>
+  <text x="760" y="280" font-family="Arial, sans-serif" font-size="8" fill="#e65100" transform="rotate(-90 760 280)">PyMongo</text>
+
+  <!-- React to Flask -->
+  <line x1="795" y1="375" x2="750" y2="375" stroke="#c2185b" stroke-width="2"/>
+  <line x1="750" y1="375" x2="750" y2="260" stroke="#c2185b" stroke-width="2"/>
+  <line x1="750" y1="260" x2="735" y2="260" stroke="#c2185b" stroke-width="2" marker-end="url(#arch-arr)"/>
+  <text x="770" y="320" font-family="Arial, sans-serif" font-size="8" fill="#c2185b" transform="rotate(-90 770 320)">HTTP/REST</text>
+
+  <!-- ==================== DEPLOYMENT INFO ==================== -->
+  <rect x="240" y="460" width="270" height="100" rx="8" fill="#f5f5f5" stroke="#999" stroke-width="1"/>
+  <text x="375" y="485" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#555">Deployment</text>
+
+  <text x="260" y="505" font-family="Arial, sans-serif" font-size="9" fill="#333">Unity Client:</text>
+  <text x="340" y="505" font-family="Arial, sans-serif" font-size="9" fill="#666">Windows/macOS standalone</text>
+
+  <text x="260" y="520" font-family="Arial, sans-serif" font-size="9" fill="#333">Flask Backend:</text>
+  <text x="340" y="520" font-family="Arial, sans-serif" font-size="9" fill="#666">localhost:5001 (dev)</text>
+
+  <text x="260" y="535" font-family="Arial, sans-serif" font-size="9" fill="#333">React Dashboard:</text>
+  <text x="340" y="535" font-family="Arial, sans-serif" font-size="9" fill="#666">localhost:3000 (dev)</text>
+
+  <text x="260" y="550" font-family="Arial, sans-serif" font-size="9" fill="#333">MongoDB:</text>
+  <text x="340" y="550" font-family="Arial, sans-serif" font-size="9" fill="#666">localhost:27017 (dev)</text>
+
+  <!-- ==================== LEGEND ==================== -->
+  <rect x="20" y="580" width="960" height="105" rx="8" fill="white" stroke="#ddd" stroke-width="1"/>
+  <text x="500" y="605" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Architecture Legend</text>
+
+  <!-- Layer colors -->
+  <rect x="40" y="620" width="20" height="15" rx="2" fill="#e0f7fa" stroke="#00838f" stroke-width="1"/>
+  <text x="70" y="632" font-family="Arial, sans-serif" font-size="9" fill="#333">UI/Presentation</text>
+
+  <rect x="170" y="620" width="20" height="15" rx="2" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="200" y="632" font-family="Arial, sans-serif" font-size="9" fill="#333">Business Logic</text>
+
+  <rect x="310" y="620" width="20" height="15" rx="2" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="340" y="632" font-family="Arial, sans-serif" font-size="9" fill="#333">Input/API</text>
+
+  <rect x="420" y="620" width="20" height="15" rx="2" fill="#fce4ec" stroke="#c2185b" stroke-width="1"/>
+  <text x="450" y="632" font-family="Arial, sans-serif" font-size="9" fill="#333">Data/Network</text>
+
+  <rect x="550" y="620" width="20" height="15" rx="2" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1"/>
+  <text x="580" y="632" font-family="Arial, sans-serif" font-size="9" fill="#333">Data Access</text>
+
+  <ellipse cx="700" cy="627" rx="15" ry="10" fill="#fff3e0" stroke="#e65100" stroke-width="1"/>
+  <text x="725" y="632" font-family="Arial, sans-serif" font-size="9" fill="#333">Database</text>
+
+  <rect x="820" y="620" width="20" height="15" rx="2" fill="#fff8e1" stroke="#ffa000" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="850" y="632" font-family="Arial, sans-serif" font-size="9" fill="#333">External</text>
+
+  <!-- Communication -->
+  <line x1="40" y1="660" x2="80" y2="660" stroke="#1976d2" stroke-width="3"/>
+  <text x="90" y="664" font-family="Arial, sans-serif" font-size="9" fill="#333">Bidirectional HTTP</text>
+
+  <line x1="220" y1="660" x2="260" y2="660" stroke="#555" stroke-width="2" marker-end="url(#arch-arr)"/>
+  <text x="270" y="664" font-family="Arial, sans-serif" font-size="9" fill="#333">Data flow</text>
+
+  <!-- Tech stack summary -->
+  <rect x="400" y="648" width="560" height="30" rx="4" fill="#fafafa" stroke="#ddd" stroke-width="1"/>
+  <text x="680" y="667" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#555">Tech Stack: Unity (C#) + Flask (Python) + MongoDB + React (JavaScript) + MediaPipe (Hand Tracking)</text>
+</svg>

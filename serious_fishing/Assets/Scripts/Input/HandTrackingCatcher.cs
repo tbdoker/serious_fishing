@@ -13,8 +13,8 @@ public class HandTrackingCatcher : MonoBehaviour
 
     [Header("Hand Skeleton")]
     [SerializeField] private bool showHandSkeleton = true; // Toggle hand skeleton on/off
-    [SerializeField] private bool normalizeHandSize = true; // Keep hand same size regardless of distance
-    [SerializeField] [Range(0f, 100f)] private float handSize = 5f; // Target hand size (wrist to middle finger)
+    [SerializeField] private bool normalizeHandSize = false; // Keep hand same size regardless of distance
+    [SerializeField] [Range(0f, 100f)] private float handSize = 25f; // Target hand size (wrist to middle finger)
     [SerializeField] private float jointSize = 7f; // Size of joint circles
     [SerializeField] private float lineWidth = 1f; // Width of bone lines
     [SerializeField] private Color handOpenColor = Color.white; // Hand skeleton color when open
