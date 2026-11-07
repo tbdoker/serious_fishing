@@ -8,6 +8,8 @@
     "chart.js": "^4.4.0",
     "date-fns": "^3.0.0",
     "framer-motion": "^10.18.0",
+    "jspdf": "^4.0.0",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
@@ -19,7 +21,7 @@
     "vite": "^5.0.7"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview"
   },

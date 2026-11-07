@@ -21,7 +21,10 @@ import {
   Zap,
   Fish,
   Clock,
+  Download,
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -179,6 +182,8 @@ export default function ChildDetail() {
     return sessions.reduce((total, session) => total + (session.sessionDuration || 0), 0);
   };
 
+  const MAX_DIFFICULTY = 12;
+
   // Calculate difficulty score based on settings
   const calculateDifficulty = (session) => {
     const speed = session.gameSettings?.speedMultiplier || 1.0;
@@ -186,14 +191,16 @@ export default function ChildDetail() {
     const maxSpawn = session.gameSettings?.maxSpawnInterval || 6.0;
     const avgSpawn = (minSpawn + maxSpawn) / 2;
     const baseInterval = 4.0; // Reference spawn interval
-    return speed * (baseInterval / avgSpawn);
+    const raw = speed * (baseInterval / avgSpawn);
+    return Math.max(0, Math.min(raw, MAX_DIFFICULTY));
   };
 
   const calculateNormalizedPerformance = (session) => {
     const accuracy = session.fishAccuracy || 0;
     const difficulty = calculateDifficulty(session);
-    if (difficulty <= 0) return accuracy;
-    return accuracy * difficulty;
+    if (MAX_DIFFICULTY <= 0) return accuracy;
+    const dnorm = difficulty / MAX_DIFFICULTY;
+    return accuracy * (0.5 + 0.5 * dnorm);
   };
 
   // Group sessions by time period
@@ -244,6 +251,11 @@ export default function ChildDetail() {
       const avgSpeed = sessions.reduce((sum, s) => sum + (s.gameSettings?.speedMultiplier || 1), 0) / sessions.length;
       const avgMinSpawn = sessions.reduce((sum, s) => sum + (s.gameSettings?.minSpawnInterval || 3), 0) / sessions.length;
       const avgMaxSpawn = sessions.reduce((sum, s) => sum + (s.gameSettings?.maxSpawnInterval || 6), 0) / sessions.length;
+      const avgMeanSpawn = sessions.reduce((sum, s) => {
+        const min = s.gameSettings?.minSpawnInterval || 3;
+        const max = s.gameSettings?.maxSpawnInterval || 6;
+        return sum + ((min + max) / 2);
+      }, 0) / sessions.length;
       const totalMissedFish = sessions.reduce((sum, s) => sum + (s.missedFish || 0), 0);
 
       return {
@@ -255,6 +267,7 @@ export default function ChildDetail() {
         speed: avgSpeed,
         minSpawnInterval: avgMinSpawn,
         maxSpawnInterval: avgMaxSpawn,
+        meanSpawnInterval: avgMeanSpawn,
         missedFish: totalMissedFish,
       };
     });
@@ -272,23 +285,20 @@ export default function ChildDetail() {
   );
 
   const calculateImprovement = (sessionsData) => {
-    if (!sessionsData.length) return 0;
-    if (sessionsData.length >= 6) {
-      const first3 = sessionsData.slice(0, 3);
-      const last3 = sessionsData.slice(-3);
-      const firstAvg =
-        first3.reduce((sum, s) => sum + calculateNormalizedPerformance(s), 0) / 3;
-      const lastAvg =
-        last3.reduce((sum, s) => sum + calculateNormalizedPerformance(s), 0) / 3;
-      return lastAvg - firstAvg;
-    }
-    if (sessionsData.length >= 2) {
-      return (
-        calculateNormalizedPerformance(sessionsData[sessionsData.length - 1]) -
-        calculateNormalizedPerformance(sessionsData[0])
-      );
-    }
-    return 0;
+    if (sessionsData.length < 2) return 0;
+    const normalized = sessionsData.map((s) => calculateNormalizedPerformance(s));
+    const count = normalized.length;
+    const meanX = (count - 1) / 2;
+    const meanY = normalized.reduce((sum, v) => sum + v, 0) / count;
+    const numerator = normalized.reduce(
+      (sum, y, i) => sum + (i - meanX) * (y - meanY),
+      0
+    );
+    const denominator = Array.from({ length: count }).reduce(
+      (sum, _, i) => sum + (i - meanX) ** 2,
+      0
+    );
+    return denominator ? numerator / denominator : 0;
   };
 
   const getChartData = () => {
@@ -298,6 +308,8 @@ export default function ChildDetail() {
   };
 
   const improvementDelta = calculateImprovement(orderedFilteredSessions);
+  const totalImprovement =
+    improvementDelta * Math.max(0, orderedFilteredSessions.length - 1);
 
   const handleDeleteSession = async (sessionId) => {
     setDeletingSession(sessionId);
@@ -311,6 +323,177 @@ export default function ChildDetail() {
       console.error('Failed to delete session:', error);
     } finally {
       setDeletingSession(null);
+    }
+  };
+
+  const handleExportPDF = () => {
+    try {
+      console.log('Starting PDF export...');
+      console.log('Child:', child);
+      console.log('Sessions:', sessions);
+      console.log('Filtered sessions:', filteredSessions);
+
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      let yPos = 20;
+
+    // Title
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Session Report: ${child.fullName}`, 14, yPos);
+    yPos += 10;
+
+    // Subtitle
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100);
+    doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, 14, yPos);
+    yPos += 15;
+
+    // Summary Statistics
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0);
+    doc.text('Summary Statistics', 14, yPos);
+    yPos += 8;
+
+    const summaryData = [
+      ['Total Sessions', `${progress?.summary?.totalSessions || 0}`],
+      ['Total Play Time', formatTotalDuration(getTotalPlayTime())],
+      ['Average Accuracy', `${progress?.summary?.avgAccuracy || 0}%`],
+      ['Best Accuracy', `${progress?.summary?.bestAccuracy || 0}%`],
+      ['Average Reaction Time', `${progress?.summary?.avgReactionTime?.toFixed(2) || 0}s`],
+      ['Best Streak', `${progress?.summary?.bestStreak || 0}`],
+      ['Total Correct Fish', `${progress?.summary?.totalCorrectFish || 0}`],
+      ['Total Wrong Fish', `${progress?.summary?.totalWrongFish || 0}`],
+      ['Improvement Rate', `${improvementDelta >= 0 ? '+' : ''}${improvementDelta.toFixed(2)}% per session`],
+      ['Total Improvement', `${totalImprovement >= 0 ? '+' : ''}${totalImprovement.toFixed(2)}%`],
+    ];
+
+    autoTable(doc, {
+      startY: yPos,
+      head: [['Metric', 'Value']],
+      body: summaryData,
+      theme: 'grid',
+      headStyles: { fillColor: [79, 70, 229], fontSize: 10, fontStyle: 'bold' },
+      styles: { fontSize: 9 },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 80 }, 1: { cellWidth: 'auto' } },
+    });
+
+    yPos = doc.lastAutoTable.finalY + 15;
+
+    // Check if we need a new page
+    if (yPos > pageHeight - 60) {
+      doc.addPage();
+      yPos = 20;
+    }
+
+    // Session History Table
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Session History', 14, yPos);
+    yPos += 8;
+
+    const sessionTableData = filteredSessions.map((session, index) => [
+      `${index + 1}`,
+      formatDate(session.sessionStartTime),
+      formatDuration(session.sessionDuration),
+      `${(session.gameSettings?.speedMultiplier || 1).toFixed(1)}x`,
+      `${(session.gameSettings?.minSpawnInterval || 3).toFixed(1)}-${(session.gameSettings?.maxSpawnInterval || 6).toFixed(1)}s`,
+      session.handTrackingUsed ? 'Yes' : 'No',
+      `${Math.round(session.fishAccuracy || 0)}%`,
+      `${calculateDifficulty(session).toFixed(2)}`,
+      `${calculateNormalizedPerformance(session).toFixed(2)}`,
+      `${session.correctFish || 0}`,
+      `${session.wrongFish || 0}`,
+      `${session.missedFish || 0}`,
+      `${(session.averageReactionTime || 0).toFixed(2)}s`,
+      `${session.maxStreak || 0}`,
+    ]);
+
+    autoTable(doc, {
+      startY: yPos,
+      head: [['#', 'Date', 'Duration', 'Speed', 'Spawn Int.', 'Hand', 'Acc%', 'Diff', 'Norm', 'Correct', 'Wrong', 'Missed', 'Reaction', 'Streak']],
+      body: sessionTableData,
+      theme: 'striped',
+      headStyles: { fillColor: [79, 70, 229], fontSize: 8, fontStyle: 'bold' },
+      styles: { fontSize: 7, cellPadding: 2 },
+      columnStyles: {
+        0: { cellWidth: 8 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 12 },
+        4: { cellWidth: 18 },
+        5: { cellWidth: 10 },
+        6: { cellWidth: 12 },
+        7: { cellWidth: 10 },
+        8: { cellWidth: 10 },
+        9: { cellWidth: 14 },
+        10: { cellWidth: 12 },
+        11: { cellWidth: 13 },
+        12: { cellWidth: 16 },
+        13: { cellWidth: 12 },
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    yPos = doc.lastAutoTable.finalY + 15;
+
+    // Check if we need a new page for quadrant data
+    if (yPos > pageHeight - 80) {
+      doc.addPage();
+      yPos = 20;
+    }
+
+    // Quadrant Accuracy (if available)
+    if (heatmapData?.quadrantAccuracy) {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Quadrant Accuracy Analysis', 14, yPos);
+      yPos += 8;
+
+      const qa = heatmapData.quadrantAccuracy;
+      const quadrantData = [
+        ['Top Left', `${qa.topLeft || 0}%`],
+        ['Top Right', `${qa.topRight || 0}%`],
+        ['Bottom Left', `${qa.bottomLeft || 0}%`],
+        ['Bottom Right', `${qa.bottomRight || 0}%`],
+      ];
+
+      autoTable(doc, {
+        startY: yPos,
+        head: [['Screen Quadrant', 'Accuracy']],
+        body: quadrantData,
+        theme: 'grid',
+        headStyles: { fillColor: [79, 70, 229], fontSize: 10, fontStyle: 'bold' },
+        styles: { fontSize: 9 },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 80 }, 1: { cellWidth: 'auto' } },
+      });
+      }
+
+      // Footer on each page
+      const totalPages = doc.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text(
+          `Page ${i} of ${totalPages} | ${child.fullName} | Generated by Serious Fishing Therapist Dashboard`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        );
+      }
+
+      // Save the PDF
+      const filename = `${child.fullName.replace(/\s+/g, '_')}_Session_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+      console.log('Saving PDF as:', filename);
+      doc.save(filename);
+      console.log('PDF export completed successfully');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert(`Failed to generate PDF: ${error.message}`);
     }
   };
 
@@ -353,7 +536,10 @@ export default function ChildDetail() {
         display: true,
         position: 'right',
         beginAtZero: true,
-        max: 3,
+        max: MAX_DIFFICULTY,
+        ticks: {
+          stepSize: 2,
+        },
         grid: {
           drawOnChartArea: false,
         },
@@ -461,6 +647,16 @@ export default function ChildDetail() {
             yAxisID: 'y1',
           },
           {
+            label: 'Mean Spawn Interval',
+            data: chartData.map((d) => d.meanSpawnInterval),
+            borderColor: '#00bcd4',
+            backgroundColor: 'rgba(0, 188, 212, 0.1)',
+            fill: false,
+            tension: 0.4,
+            borderWidth: 3,
+            yAxisID: 'y1',
+          },
+          {
             label: 'Max Spawn Interval',
             data: chartData.map((d) => d.maxSpawnInterval),
             borderColor: '#03a9f4',
@@ -547,14 +743,25 @@ export default function ChildDetail() {
           </div>
         </div>
 
-        <button
-          className={`btn ${settingsOpen ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setSettingsOpen(!settingsOpen)}
-        >
-          <Settings size={20} />
-          Game Settings
-          {settingsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </button>
+        <div className="detail-header-actions">
+          <button
+            className="btn btn-success"
+            onClick={handleExportPDF}
+            disabled={sessions.length === 0}
+            title="Export detailed session report as PDF"
+          >
+            <Download size={20} />
+            Export PDF
+          </button>
+          <button
+            className={`btn ${settingsOpen ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setSettingsOpen(!settingsOpen)}
+          >
+            <Settings size={20} />
+            Game Settings
+            {settingsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
+        </div>
       </div>
 
       {/* Settings Panel */}
@@ -937,7 +1144,7 @@ export default function ChildDetail() {
           </div>
         </div>
 
-                  <div className="stat-card mini">
+        <div className="stat-card mini">
           {improvementDelta >= 0 ? (
             <TrendingUp size={20} className="text-success" />
           ) : (
@@ -952,7 +1159,36 @@ export default function ChildDetail() {
               {improvementDelta >= 0 ? '+' : ''}
               {improvementDelta.toFixed(2)}%
             </span>
-            <span className="stat-label">Improvement</span>
+            <span
+              className="stat-label"
+              title="Computed as the slope of a linear regression over normalized performance across all sessions. This reflects the overall performance trend rather than a simple before-and-after difference."
+            >
+              Improvement (trend per session)
+            </span>
+          </div>
+        </div>
+
+        <div className="stat-card mini">
+          {totalImprovement >= 0 ? (
+            <TrendingUp size={20} className="text-success" />
+          ) : (
+            <TrendingDown size={20} className="text-error" />
+          )}
+          <div className="stat-content">
+            <span
+              className={`stat-value ${
+                totalImprovement >= 0 ? 'text-success' : 'text-error'
+              }`}
+            >
+              {totalImprovement >= 0 ? '+' : ''}
+              {totalImprovement.toFixed(2)}%
+            </span>
+            <span
+              className="stat-label"
+              title="Total Improvement = beta1 * (N - 1). beta1 is the trend per session, N is the number of sessions. Why (N - 1)? Session 1 is the baseline; improvement happens between sessions."
+            >
+              Total Improvement
+            </span>
           </div>
         </div>
       </div>
@@ -1333,6 +1569,11 @@ export default function ChildDetail() {
           display: flex;
           align-items: center;
           gap: 1.25rem;
+        }
+
+        .detail-header-actions {
+          display: flex;
+          gap: 0.75rem;
         }
 
         .child-avatar-xl {

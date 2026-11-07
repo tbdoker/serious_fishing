@@ -15,7 +15,7 @@ DB_NAME = "serious_fishing"
 JWT_SECRET = "serious_fishing_secret_key_2024"  
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"])
+CORS(app, supports_credentials=True)
 
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
@@ -937,6 +937,8 @@ def get_child_progress(child_id):
     total_wrong = sum(s.get("wrongFish", 0) for s in sessions)
     total_time = sum(s.get("sessionDuration", 0) for s in sessions)
 
+    MAX_DIFFICULTY = 12.0
+
     def calc_difficulty(session):
         settings = session.get("gameSettings", {}) or {}
         speed = settings.get("speedMultiplier", 1.0)
@@ -944,22 +946,28 @@ def get_child_progress(child_id):
         max_spawn = settings.get("maxSpawnInterval", 6.0)
         avg_spawn = (min_spawn + max_spawn) / 2 if (min_spawn and max_spawn) else 1.0
         base_interval = 4.0
-        return speed * (base_interval / avg_spawn) if avg_spawn > 0 else 0
+        raw = speed * (base_interval / avg_spawn) if avg_spawn > 0 else 0
+        return max(0, min(raw, MAX_DIFFICULTY))
 
     def calc_normalized_performance(session):
         accuracy = to_percent(session.get("fishAccuracy", 0))
         difficulty = calc_difficulty(session)
-        return accuracy * difficulty if difficulty > 0 else accuracy
+        if MAX_DIFFICULTY <= 0:
+            return accuracy
+        dnorm = difficulty / MAX_DIFFICULTY
+        return accuracy * (0.5 + 0.5 * dnorm)
 
-    # Calculate improvement (compare first 3 sessions vs last 3 sessions)
-    if total_sessions >= 6:
-        first_3_avg = sum(calc_normalized_performance(s) for s in sessions[:3]) / 3
-        last_3_avg = sum(calc_normalized_performance(s) for s in sessions[-3:]) / 3
-        improvement = last_3_avg - first_3_avg
-    elif total_sessions >= 2:
-        improvement = calc_normalized_performance(sessions[-1]) - calc_normalized_performance(sessions[0])
+    # Calculate improvement as linear regression slope over all sessions
+    if total_sessions >= 2:
+        normalized = [calc_normalized_performance(s) for s in sessions]
+        mean_x = (total_sessions - 1) / 2
+        mean_y = sum(normalized) / total_sessions
+        numerator = sum((i - mean_x) * (y - mean_y) for i, y in enumerate(normalized))
+        denominator = sum((i - mean_x) ** 2 for i in range(total_sessions))
+        improvement = numerator / denominator if denominator else 0
     else:
         improvement = 0
+    total_improvement = improvement * (total_sessions - 1) if total_sessions >= 2 else 0
 
     return jsonify({
         "ok": True,
@@ -974,7 +982,8 @@ def get_child_progress(child_id):
                 "totalCorrectFish": total_correct,
                 "totalWrongFish": total_wrong,
                 "totalPlayTime": total_time,
-                "improvement": round(improvement, 2)
+                "improvement": round(improvement, 2),
+                "totalImprovement": round(total_improvement, 2)
             }
         }
     })
@@ -1335,4 +1344,4 @@ def get_session_stats():
 # RUN
 # ----------------------------
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)

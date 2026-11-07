@@ -1,0 +1,610 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black
+}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\onehalfspacing
+
+\newcommand{\placeholderfigure}[2]{%
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.92\linewidth}{\vspace{#2}\centering #1\vspace{#2}}}
+\caption{#1}
+\end{figure}
+}
+
+\title{ENS 491-492 -- Graduation Project \\ Final Report \\
+\vspace{0.5em}
+Serious Fishing: A Customizable Serious Game Platform for Motor and Visual Discrimination Training in Children with Cerebral Palsy}
+\author{Group Members: Efe Ya\u{g}\i z K\i l\i\c{c}kaya, Tan Berk D\"oker \\ Supervisor(s): Esra Erdem \\ Institution: Sabanc\i\ University}
+\date{2026-01-03}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\clearpage
+\tableofcontents
+\clearpage
+\setcounter{page}{1}
+
+\section{EXECUTIVE SUMMARY}
+Cerebral palsy (CP) commonly results in long-term motor impairments and can co-occur with visual-perceptual difficulties. Rehabilitation therefore requires frequent, repetitive practice, yet real-world therapy intensity is constrained by clinic time, cost, and reduced motivation during repetitive exercises. This project addresses the need for an accessible, engaging, and therapist-configurable training platform that supports upper-limb practice and visual discrimination while enabling longitudinal monitoring.
+
+We developed \textit{Serious Fishing}, a Unity-based serious game in which children catch fish on a 2D screen. The game supports mouse and touch input and includes an optional camera-based hand tracking mode. Therapists can configure per-child parameters such as fish speed, spawn interval range, spawn side (left/right/random), target rule (random target or fixed color), and input/audio settings. During each session, the client logs outcomes and computes metrics including accuracy (correct catches divided by total clicks), reaction time (spawn-to-correct catch), streak statistics, and spatial indicators such as reach dispersion and click heatmaps.
+
+A Flask backend with MongoDB stores users, per-child settings, and session records, and a React-based therapist dashboard enables parameter control and visual reporting (session history, trends, and heatmaps). The outcome is an end-to-end prototype deployable on standard hardware, with an extensible data model and reporting pipeline, validated through qualitative feedback from a certified occupational therapist.
+
+\clearpage
+\section{PROBLEM STATEMENT}
+\subsection*{2.0 Background, motivation, and related work}
+Cerebral palsy is one of the most common physical disabilities in childhood and is defined as a group of permanent disorders of movement and posture that limit activity \cite{ref1,ref2}. Children with CP present heterogeneous impairments in strength, coordination, selective motor control, and range of motion, and can additionally experience sensory, cognitive/communication, and visual-perceptual difficulties \cite{ref3}. In practice, rehabilitation aims to improve functional abilities through repeated, goal-directed practice with appropriate feedback. Yet delivering sufficient therapy intensity is challenging due to limited clinic time, cost, and motivation; many children disengage from repetitive exercises, reducing adherence and practice dose.
+
+Serious games and non-immersive virtual reality have been studied as an approach to increase engagement while enabling repeated practice and feedback. Systematic and scoping reviews report that these approaches can support upper-limb rehabilitation and may improve selected outcomes when aligned with clinical goals \cite{ref4,ref5,ref6,ref12,ref13}. In CP, game-based therapies using consumer devices (e.g., Wii, Kinect, Leap Motion) have been investigated; randomized and comparative studies have reported improvements in manual dexterity and functional outcomes under certain protocols \cite{ref11}. At the same time, the evidence base remains heterogeneous, and many research prototypes face practical adoption barriers.
+
+Our project was additionally motivated by a clinically relevant second dimension: visual perception. Visual-perceptual impairments are common in CP and affect functional performance \cite{ref8}. Visual discrimination (distinguishing objects based on features such as color and direction) is a foundational skill for daily activities and learning, and deficits can correlate with motor impairment severity in spastic CP \cite{ref9}. Interventions that target visual perception and visual-motor integration have shown benefits in functional measures \cite{ref10}. This literature suggests a strong rationale for combining motor reaching practice with explicit visual discrimination tasks in a configurable game.
+
+Despite the promise of serious games, several practical gaps recur: many systems rely on specialized hardware or complex setup; they often provide limited per-child customization; and they frequently lack integrated data pipelines that automatically log sessions and summarize progress in therapist-usable forms \cite{ref5,ref6,ref13}. These limitations motivated \textit{Serious Fishing}: a low-cost, therapist-configurable platform that combines motor practice, visual discrimination, and automatic data collection and reporting.
+
+\subsection*{2.1 The real-world problem addressed}
+Therapists and caregivers need a low-cost, configurable, and engaging training tool for children with cerebral palsy that can be deployed in real-world settings (clinic or home) to support repeated upper-limb practice and visual discrimination, while automatically collecting and summarizing performance data to enable evidence-informed adjustment of difficulty and longitudinal monitoring.
+
+\subsection*{2.2 User roles and usage scenarios}
+We considered three stakeholder roles and designed the platform around their needs. The \textbf{child} is the primary player and needs a simple, motivating, and safe interaction with immediate feedback. The \textbf{therapist} is the clinical owner who configures difficulty, interprets performance, and plans therapy, and therefore needs reliable parameter control and meaningful longitudinal analytics. The \textbf{caregiver/parent} facilitates home practice and benefits from easy setup and simple summaries.
+
+In practice, the platform supports both in-clinic sessions (therapist configures parameters and observes performance) and home practice sessions (the child repeats therapist-prescribed sessions and the therapist reviews logs remotely via the dashboard).
+
+\placeholderfigure{Figure A. Scenario/workflow diagram (clinic vs.\ home practice) (placeholder)}{2.4cm}
+
+\subsection{Objectives/Tasks}
+Table~\ref{tab:objectives} summarizes the objectives/tasks of the project and the intended results for each objective/task.
+
+\begin{table}[H]
+\centering
+\caption{Objectives/Tasks and Intended Results}
+\label{tab:objectives}
+\begin{tabular}{p{0.48\linewidth} p{0.34\linewidth} p{0.12\linewidth}}
+\toprule
+\textbf{Objective/Task} & \textbf{Intended Result} & \textbf{Status} \\
+\midrule
+Design serious game mechanics aligned with CP therapy needs & Fishing-based interaction loop supporting repeated reaching/selection with immediate feedback & Implemented \\
+Implement therapist-configurable parameters & Per-child settings: fish speed, spawn intervals, spawn side, target rule, session duration and input options & Implemented \\
+Implement data acquisition and analytics & Session logs and derived metrics (accuracy, reaction time, streaks, spatial dispersion, heatmaps, quadrant accuracy) & Implemented \\
+Implement backend and database & REST API + MongoDB for authentication, settings persistence, and session storage & Implemented \\
+Evaluation and demo & End-to-end demo and expert interview feedback for feasibility & Completed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Realistic Constraints}
+The following realistic constraints shaped the project design and implementation.
+
+\textbf{Economic and equipment constraints.} The system was designed to run on standard hardware (PC + display) with mouse/touch input. Camera-based hand tracking is optional and uses consumer webcams and a software pipeline rather than specialized sensors \cite{ref7}.
+
+\textbf{Compute and performance constraints.} During development we observed that real-time hand tracking performance depended strongly on device capabilities. On a lower-end Windows PC, the MediaPipe-based pipeline could lag and produce unstable cursor motion, while on Apple Silicon devices (MacBook Pro M1 and M4) the same pipeline felt considerably smoother in interactive use. We addressed this by keeping hand tracking optional, retaining mouse/touch as a fully functional fallback, and exposing calibration controls (cursor size, sensitivity, normalization, and grab threshold) so therapists can select a stable configuration for the available hardware.
+
+\textbf{Safety, fatigue, and session management.} Children with CP can fatigue quickly. The game supports short sessions with adjustable duration, pause controls, and therapist-configurable difficulty to manage cognitive and motor load.
+
+\textbf{Heterogeneity of impairments.} CP presentations vary widely. We therefore emphasized parameterization and per-child profiles rather than one fixed difficulty curve, enabling therapists to tailor time pressure, movement demands, and discrimination rules.
+
+\textbf{Usability across stakeholders.} We separated the child-facing play experience (minimal, low-text interface) from adult-facing configuration and reporting (Unity settings panel and therapist web dashboard).
+
+\textbf{Data privacy and ethical handling.} The prototype stores identifiable child performance data. While this study did not collect participant data, future deployment must include informed consent, secure authentication, access control, and secure storage.
+
+\textbf{Maintainability and integration risk.} We used stable tools (Unity, Flask, MongoDB) and a REST interface to decouple game, backend, and dashboard, supporting future extensions and independent iteration.
+
+\clearpage
+\section{METHODOLOGY}
+This section follows the ENS492 work package guidance and explicitly addresses the required topics: design and implementation of the serious game; design and implementation of data acquisition, analysis and reporting; design and implementation of databases; design and implementation of UI; and evaluation and demo. The methodology reflects an iterative development process: ENS491 focused on design decisions and prototyping, while ENS492 focused on implementation, integration, and reporting features.
+
+\subsection{Design and implementation of your serious game}
+\subsubsection*{Purpose and therapeutic rationale}
+The game is designed to support two complementary training goals. First, it targets \textbf{upper-limb reaching and range of motion} by prompting repeated point-and-select actions across the screen; parameters such as spawn side can bias movement toward the left or right to encourage midline crossing and exploration. Second, it targets \textbf{visual discrimination} by requiring the child to catch fish according to a target rule (random target or fixed color), which adds a perceptual decision component and encourages selective attention while maintaining motor practice. We chose a fishing metaphor because it maps naturally to selection actions (``catching'') and supports immediate feedback (sound and on-screen cues) that can help maintain engagement.
+
+\subsubsection*{Game flow (start to end)}
+Figure~\ref{fig:workflow} summarizes the end-to-end game flow. The flow is designed so that each session is self-contained and logs sufficient context (settings and events) to enable later interpretation.
+The session begins with authentication in the Unity UI (login or register). After login, Unity retrieves per-child settings from the backend and applies them locally, then starts a timed session and displays the current target rule. During gameplay, fish spawn at configurable intervals and move across the screen while the child attempts to catch them. If real-time synchronization is enabled, Unity polls the backend periodically (every 2 seconds in the prototype) and applies updated settings without restarting the session. When the session ends (by duration or therapist action), the client computes summary metrics and uploads a session payload. The therapist dashboard can then retrieve session history and visualize trends and heatmaps.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.92\linewidth}{\vspace{2.8cm}\centering Figure 1. Gameplay workflow (login $\rightarrow$ load settings $\rightarrow$ play $\rightarrow$ upload $\rightarrow$ review) (placeholder)\vspace{2.8cm}}}
+\caption{Gameplay workflow from login to session upload and therapist review (placeholder).}
+\label{fig:workflow}
+\end{figure}
+
+\subsubsection*{Unity architecture and modules}
+To support maintainability and future extensions, the Unity project is organized into modules that separate gameplay logic, input, configuration, and analytics.
+
+Core gameplay logic is centered on \textbf{GameManager}, which controls session state, target rule selection, scoring feedback, and reset logic. Fish appearance and pacing are handled by \textbf{FishSpawner} and \textbf{FishMovement}, which implement timed spawning, sprite/color assignment, movement direction, and speed. Safe interruption and session termination are handled by \textbf{PauseMenuController}.
+
+Input is implemented in two interchangeable layers. Mouse/touch input uses screen-to-world conversion and raycasting to detect fish selection. The optional hand tracking input uses a camera-based landmark pipeline that maps the palm position to world space and triggers a catch attempt on a grab gesture within a configurable radius.
+
+Analytics and networking are separated from gameplay. \textbf{SessionStats} accumulates per-session counters and event arrays (hits, correctness, reaction times, click positions, zone and quadrant statistics). \textbf{SessionUploader} serializes the session into JSON and posts it to the backend. \textbf{GameSettingsManager} fetches and applies settings and performs periodic polling for real-time updates.
+
+Audio feedback is handled by \textbf{AudioManager}, which plays looped background music and separate sound effects for correct and wrong catches and for menu interactions, with per-child volume settings persisted in the database.
+
+\subsubsection*{Implementation details anchored in the codebase}
+The Unity implementation follows a script-level separation that makes it easier to evolve the platform without reworking the entire game loop. Configuration synchronization is implemented in \texttt{GameSettingsManager.cs}, which requests settings from the backend and applies them to the active \texttt{GameSettings} asset and to runtime components such as the hand tracking and audio managers. During gameplay, the same component performs periodic polling with a configurable interval (2 seconds in the prototype) and applies changes immediately, which supports therapist-in-the-loop adjustment during a running session. Session logging is centralized in \texttt{SessionStats.cs} and uploaded through \texttt{SessionUploader.cs}, which serializes a DTO and posts it to the backend. The fish spawn side parameter supports Left, Right, and Random selection, where Random chooses the side independently per spawn in \texttt{FishSpawner.cs}.
+
+\begin{table}[H]
+\centering
+\caption{Examples of Unity scripts and their responsibilities (selected).}
+\label{tab:unity_scripts}
+\begin{tabular}{p{0.30\linewidth} p{0.62\linewidth}}
+\toprule
+\textbf{Script} & \textbf{Responsibility in the prototype} \\
+\midrule
+\texttt{GameSettingsManager.cs} & Fetches settings from \texttt{/game-settings}, applies them, and polls for updates during play \\
+\texttt{SessionStats.cs} & Records per-session counters and spatial/timing event data, including reaction times and click positions \\
+\texttt{SessionUploader.cs} & Serializes a session DTO and uploads it to \texttt{/save-session} \\
+\texttt{HandTrackingCatcher.cs} & Converts landmarks to world space, draws skeleton/cursor, and catches fish on grab gesture \\
+\texttt{GameHandLandmarkerRunner.cs} & Runs the MediaPipe hand landmark model and forwards results to the catcher \\
+\texttt{AudioManager.cs} & Plays looped background music and menu/catch sound effects with persisted volume settings \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\placeholderfigure{Figure 2. Unity module/component diagram (placeholder)}{2.6cm}
+\placeholderfigure{Figure 3. Sequence diagram for a catch attempt (placeholder)}{2.6cm}
+
+\subsubsection*{Hand tracking integration (optional)}
+The extended prototype includes camera-based hand tracking integrated into Unity via the MediaPipe Unity plugin \cite{ref7}. Webcam frames are processed to estimate 21 hand landmarks per detected hand, mapped into Unity screen space and then to world space. A palm-centered cursor can be displayed and scaled with a configurable cursor size, and a ``grab'' gesture triggers a catch attempt within a circular radius. The hand tracking settings are stored per child and can be edited in both Unity and the therapist dashboard.
+
+A major integration challenge in this subsystem was temporal instability of the detected landmarks. Early versions exhibited visible flickering of the skeleton overlay and a perceived ``breathing'' effect where the hand appeared to scale up and down across frames. We interpreted this behavior as a combination of frame-to-frame detection jitter and performance constraints on some machines. To reduce its impact in the prototype, we introduced optional hand-size normalization and exposed tuning parameters so the tracking visualization and cursor behavior can be calibrated to each setup. This mitigates the symptom in many conditions but also motivates future work on temporal smoothing and confidence-based filtering for more robust deployment.
+Settings include enabling or disabling tracking, selecting which detected hand to use (hand index), adjusting movement sensitivity relative to screen center, toggling the skeleton overlay, enabling hand-size normalization and setting the target size, configuring grab cursor visibility and cursor size, setting the grab detection threshold, and adjusting joint visualization size. Table~\ref{tab:hand_settings} summarizes these settings and their ranges.
+
+\begin{table}[H]
+\centering
+\caption{Hand tracking settings exposed in the prototype.}
+\label{tab:hand_settings}
+\begin{tabular}{p{0.30\linewidth} p{0.20\linewidth} p{0.40\linewidth}}
+\toprule
+\textbf{Setting} & \textbf{Range} & \textbf{Purpose} \\
+\midrule
+Enable hand tracking & On/Off & Allows full fallback to mouse/touch \\
+Hand index & 0--1 & Selects which detected hand controls the cursor \\
+Movement sensitivity & 0--10 & Adjusts how far the cursor moves per hand motion \\
+Show hand skeleton & On/Off & Visual feedback for hand pose and tracking confidence \\
+Normalize hand size & On/Off & Stabilizes skeleton size against distance-to-camera changes \\
+Hand size & 0--100 & Target wrist-to-finger scale when normalization is enabled \\
+Show grab cursor & On/Off & Shows a circular cursor at palm center \\
+Cursor size & 1--100 & Cursor display size and catch radius \\
+Grab threshold & 0--1 & Gesture threshold for ``grab'' detection \\
+Joint size & 0--20 & Visual size of landmarks for visibility \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Audio feedback design}
+Audio feedback supports engagement and provides immediate reinforcement. The prototype includes looped background music and sound effects for correct catches, wrong catches, and menu interactions. Per-child volume sliders are exposed for music and each sound category to allow therapists to accommodate sensory sensitivities. The background music is played in a continuous loop and persists across play sessions unless muted by settings.
+
+\subsubsection*{Difficulty parameters and mapping to therapy goals}
+The platform exposes parameters that therapists can use to shape motor and perceptual demands. Fish speed and spawn intervals primarily control time pressure and repetition rate; spawn side (left/right/random) biases the required reaching direction and can encourage exploration or midline crossing; target fish mode alters the perceptual and attentional load by changing the discrimination rule; and input modality (mouse/touch versus hand tracking) changes the motor control requirements while maintaining the same core task. Table~\ref{tab:param_mapping} provides a conceptual mapping from parameters to therapy goals.
+
+\begin{table}[H]
+\centering
+\caption{Example parameter-to-therapy-goal mapping (conceptual).}
+\label{tab:param_mapping}
+\begin{tabular}{p{0.28\linewidth} p{0.28\linewidth} p{0.36\linewidth}}
+\toprule
+\textbf{Parameter} & \textbf{Technical effect} & \textbf{Therapy relevance (examples)} \\
+\midrule
+Speed multiplier & Increases fish movement speed & Higher time pressure; trains quicker reaching and decision-making \\
+Spawn interval range & Controls fish density and pacing & Adjusts repetition rate; supports attention and endurance \\
+Spawn side (L/R/Random) & Biases where fish enter & Encourages reaching to affected side; supports midline crossing \\
+Target fish mode & Changes discrimination rule & Visual discrimination: selective attention to a feature (color) \\
+Session duration & Controls practice dose & Fatigue management; consistent practice windows \\
+Input modality & Mouse/touch vs hand tracking & Accessible interaction; supports alternative motor control approaches \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Design and implementation of data acquisition, analysis, and reporting}
+\subsubsection*{What data are considered and in what format?}
+During gameplay, Unity records both \textbf{context} and \textbf{interaction outcomes}. Data are serialized as a JSON document at session end and stored as a session record in MongoDB. Each record includes identifiers and timestamps, a settings snapshot (so interpretation accounts for difficulty), outcome counts (correct, wrong, missed, and total clicks), reaction time summaries and lists, spatial click data and derived summaries, and a flag indicating whether hand tracking was used.
+
+\begin{table}[H]
+\centering
+\caption{High-level session JSON fields (simplified).}
+\label{tab:session_fields}
+\begin{tabular}{p{0.28\linewidth} p{0.22\linewidth} p{0.42\linewidth}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Meaning} \\
+\midrule
+userId, username & string & Child identity for linking sessions and settings \\
+sessionStartTime, sessionEndTime & ISO 8601 & Timestamps for ordering and duration \\
+sessionDuration & float & Total session time (seconds) \\
+gameSettings & object & Settings snapshot: speed, spawn intervals, spawn side, target mode \\
+handTrackingUsed & bool & Whether hand input was used during the session \\
+correctFish, wrongFish, missedFish & int & Outcomes for fish interactions and target misses \\
+totalClicks & int & Total click attempts (including empty clicks/grab misses) \\
+fishAccuracy & float & Accuracy metric used in dashboard (0--1 stored; shown as \%) \\
+averageReactionTime & float & Mean reaction time over correct target catches \\
+clickPositions & array & Click/grab world coordinates for heatmaps \\
+quadrantAccuracy & object & 2x2 accuracy for spatial bias summary \\
+zoneHeatmap & array & 3x3 distribution summary for quick inspection \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{How is reaction time calculated?}
+Reaction time is defined as the delay between \textbf{when a fish spawns} and \textbf{when the child catches it}. In the implementation, each fish stores a spawn timestamp. When caught, the reaction time is computed as:
+\[
+\text{reactionTime} = t_{\text{click}} - t_{\text{spawn}}.
+\]
+To improve interpretability, the final prototype records reaction time only for \textbf{correct catches} (i.e., the target fish under the current rule). This avoids mixing perceptual errors (wrong fish) with motor response timing in the same metric.
+
+\subsubsection*{How is accuracy calculated?}
+The dashboard uses an accuracy definition that incorporates missed attempts:
+\[
+\text{accuracy} = \frac{\text{correctFish}}{\text{totalClicks}}.
+\]
+This differs from a fish-only ratio (correct/(correct+wrong)) by penalizing empty clicks/grab misses, making the metric more sensitive to motor control and targeting difficulty. For therapist-facing reporting, this is often desirable because it reflects both discriminative correctness and motor precision.
+
+In the implementation, \texttt{totalClicks} is incremented on every attempt, including clicks on empty space (mouse/touch) and grab gestures that do not overlap any fish (hand tracking). Correct and wrong fish counts only increment when a fish collider is successfully selected. Reaction time values are only appended on correct catches, so the reported average reaction time reflects the child's timing when the selection decision was correct under the active rule.
+
+\subsubsection*{Difficulty score and normalized performance}
+Because raw accuracy can decrease when difficulty increases, we compute a \textbf{difficulty score} based on the settings snapshot. In the prototype, difficulty increases with speed and with shorter spawn intervals:
+\[
+\text{difficulty} = \text{speedMultiplier} \cdot \frac{T_0}{\text{avgSpawnInterval}},
+\]
+where $T_0$ is a reference interval (4 seconds in the dashboard) and $\text{avgSpawnInterval} = ( \text{minSpawnInterval} + \text{maxSpawnInterval} )/2$.
+
+We then define a \textbf{normalized performance} metric as:
+\[
+\text{normalizedPerformance} = \text{accuracy(\%)} \times \text{difficulty}.
+\]
+This metric is intended to increase when a child maintains accuracy under higher time pressure, and to provide a single trend line that is more comparable across sessions where settings change.
+
+\subsubsection*{Improvement calculation and filtering}
+To summarize progress, the dashboard computes an improvement value from normalized performance. If at least six sessions are available, improvement is defined as the difference between the mean of the last three sessions and the mean of the first three sessions; if fewer sessions are available, the difference between the last and first session is used. Importantly, this computation is applied after session filtering (e.g., only hand-tracking sessions), allowing therapists to compare progress within consistent input modalities and parameter conditions.
+
+\subsubsection*{Spatial analysis: heatmap, zone grid, and quadrant accuracy}
+Spatial analysis supports approximating the child's reachable workspace and attention distribution. From stored click positions we compute horizontal and vertical spread (the range of click coordinates along the X and Y axes), a 3x3 zone heatmap (percentage of clicks in each zone), and a 2x2 quadrant accuracy summary that can reveal spatial bias, such as weaker performance on one side.
+In the therapist dashboard, a heatmap visualization shows click density and can be filtered to include only sessions played with or without hand tracking.
+
+\placeholderfigure{Figure 4. Dataflow: Unity logging $\rightarrow$ session JSON $\rightarrow$ MongoDB $\rightarrow$ dashboard plots (placeholder)}{2.6cm}
+\placeholderfigure{Figure 5. Heatmap and quadrant accuracy mini-grid (placeholder)}{2.6cm}
+
+\subsubsection*{What do the reports look like for child, caretaker, and therapist?}
+\textbf{Child feedback} is immediate and minimal: a target indicator and feedback message for correct/incorrect catches, plus sound cues. \textbf{Caretaker feedback} can be a short end-of-session summary (duration, attempts, correct catches) to encourage adherence. \textbf{Therapist reports} include: session list with settings and outcomes, progress charts over time (accuracy, difficulty, normalized performance), and spatial heatmaps with quadrant summaries.
+
+\subsection{Design and implementation of databases}
+\subsubsection*{Database choice and rationale}
+We used MongoDB because session payloads naturally contain nested documents (settings snapshots and quadrant accuracy) and arrays (reaction times, click positions, heatmap vectors). A document-oriented schema supports rapid iteration during prototyping and simplifies storing variable-length session data without heavy schema migration overhead \cite{ref15}.
+
+During early development we experimented with a hosted MongoDB deployment for convenience and remote access. For ease of local iteration during integration and debugging, we later moved to a local MongoDB instance, with the expectation that production deployment would use a server-hosted database again.
+
+\subsubsection*{Collections and logical schema}
+The prototype database consists of three primary collections: \textbf{users} for child and therapist accounts (with a role field and therapist assignment for children), \textbf{game\_settings} for per-child settings keyed by userId and shared by Unity and the dashboard, and \textbf{sessions} for session documents that store timestamps, settings snapshots, performance metrics, and spatial arrays.
+
+\begin{table}[H]
+\centering
+\caption{MongoDB collections and responsibilities.}
+\label{tab:db_collections}
+\begin{tabular}{p{0.22\linewidth} p{0.22\linewidth} p{0.48\linewidth}}
+\toprule
+\textbf{Collection} & \textbf{Key} & \textbf{Stored content} \\
+\midrule
+users & \_id & Username, role (therapist/child), identity fields, therapist assignment \\
+game\_settings & userId & Speed/spawn/target/input/audio settings (per child) \\
+sessions & userId + time & Settings snapshot, counters, reaction times, click positions, heatmap summaries \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Realtime vs static data}
+\textbf{Static data} includes user profiles and saved parameter profiles (settings). \textbf{Real-time data} includes click events and fish outcomes generated during gameplay. We do not stream raw frames; instead, we compute summary metrics client-side and store compact event lists needed for reporting (e.g., click positions and reaction time list).
+
+\subsubsection*{Authentication and access control (prototype constraints)}
+The therapist dashboard uses JWT tokens for authenticated API access, while the Unity child login uses a simplified credential flow for compatibility. This is sufficient for a prototype but must be strengthened before real deployment (secure password storage, HTTPS, rate limiting, and audit logging).
+
+\subsubsection*{Concrete settings persistence and defaults}
+Per-child settings are persisted in the \texttt{game\_settings} collection. On first registration of a child account, the backend inserts a default settings document; on child login, it also ensures that a settings document exists for older accounts created before the settings feature. The defaults used in the prototype are shown in Table~\ref{tab:default_settings}. These values are intended as a safe starting point rather than a clinically validated prescription.
+
+\begin{table}[H]
+\centering
+\caption{Default per-child settings stored in \texttt{game\_settings} (prototype defaults).}
+\label{tab:default_settings}
+\begin{tabular}{p{0.34\linewidth} p{0.18\linewidth} p{0.40\linewidth}}
+\toprule
+\textbf{Setting key} & \textbf{Default} & \textbf{Notes} \\
+\midrule
+\texttt{speedMultiplier} & 1.0 & Multiplies fish movement speed \\
+\texttt{minSpawnInterval} & 3.0 & Minimum seconds between spawns \\
+\texttt{maxSpawnInterval} & 6.0 & Maximum seconds between spawns \\
+\texttt{spawnFrom} & Right & Left/Right/Random \\
+\texttt{targetFishMode} & Random & Random target or fixed color rule \\
+\texttt{useHandTracking} & True & Enables optional camera-based input \\
+\texttt{handIndexToUse} & 0 & Which detected hand controls input \\
+\texttt{movementSensitivity} & 1.5 & Scales mapped hand motion \\
+\texttt{showHandSkeleton} & True & Toggles landmark visualization \\
+\texttt{normalizeHandSize} & True & Stabilizes skeleton size \\
+\texttt{handSize} & 5.0 & Normalization target scale (0--100 in UI) \\
+\texttt{showGrabCursor} & True & Toggles palm-centered cursor \\
+\texttt{cursorSize} & 3.0 & Cursor scale and catch radius \\
+\texttt{grabThreshold} & 0.6 & Grab gesture threshold (0--1) \\
+\texttt{jointSize} & 7.0 & Landmark visualization size \\
+\texttt{musicVolume} & 0.6 & Background music volume (0--1) \\
+\texttt{correctFishVolume} & 1.0 & Correct catch sound volume (0--1) \\
+\texttt{wrongFishVolume} & 1.0 & Wrong catch sound volume (0--1) \\
+\texttt{menuVolume} & 0.8 & Menu click sound volume (0--1) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{REST endpoints and consumers}
+The platform uses a small set of REST endpoints shared by Unity and the therapist dashboard. Unity primarily uses endpoints for child authentication, settings retrieval/update, and session upload. The therapist dashboard uses JWT-protected endpoints under \texttt{/api/therapist} for child management and analytics. Table~\ref{tab:endpoints} summarizes the key endpoints and how they are used in the prototype.
+
+\begin{table}[H]
+\centering
+\caption{Key REST endpoints used in the prototype.}
+\label{tab:endpoints}
+\begin{tabular}{p{0.22\linewidth} p{0.14\linewidth} p{0.56\linewidth}}
+\toprule
+\textbf{Endpoint} & \textbf{Method} & \textbf{Primary consumer and purpose} \\
+\midrule
+\texttt{/register} & POST & Unity child registration; creates user and default settings \\
+\texttt{/login} & POST & Unity child login; returns userId and identity fields \\
+\texttt{/game-settings} & GET/POST & Unity fetches and saves per-child settings (query param \texttt{userId}) \\
+\texttt{/save-session} & POST & Unity uploads a session JSON payload at session end \\
+\texttt{/api/auth/login} & POST & Therapist dashboard login; returns JWT token \\
+\texttt{/api/therapist/children/\{id\}/settings} & GET/PUT & Therapist dashboard reads/updates per-child settings \\
+\texttt{/api/therapist/children/\{id\}/sessions} & GET & Therapist dashboard retrieves paginated session history \\
+\texttt{/api/therapist/children/\{id\}/progress} & GET & Therapist dashboard retrieves progress series and summary \\
+\texttt{/api/therapist/children/\{id\}/heatmap} & GET & Therapist dashboard retrieves per-session or aggregated heatmap (supports \texttt{sessionId} and \texttt{hand} filters) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Design and implementation of UI}
+\subsubsection*{Child UI and in-game settings (Unity UI Toolkit)}
+The Unity UI uses UI Toolkit with separate views for login, register, welcome, settings, and pause. The settings panel is scrollable and includes game difficulty parameters, audio volume sliders, and hand tracking settings. The interface is designed for simplicity: large buttons, minimal text, and clear grouping of settings. The pause menu allows safe interruption and session termination.
+
+The settings UI is accessible from both the welcome screen and the pause menu. When a session starts, Unity fetches the latest settings and begins polling so therapist changes propagate during play. This design supports a practical clinical workflow where a therapist may adjust difficulty on-the-fly after observing performance for a short period.
+
+\placeholderfigure{Figure 6. Unity login/register UI (placeholder)}{2.6cm}
+\placeholderfigure{Figure 7. Unity settings panel (scrollable) (placeholder)}{2.6cm}
+\placeholderfigure{Figure 8. Unity pause menu UI (placeholder)}{2.6cm}
+
+\subsubsection*{Therapist dashboard (React)}
+The therapist dashboard supports therapist authentication and session management, child registration and assignment, per-child settings editing and saving, and longitudinal reporting. During play, Unity retrieves these settings and can update them every two seconds via polling, enabling near real-time parameter changes. On the reporting side, the dashboard presents a session history table (including whether hand tracking was used), trend charts for accuracy, reaction time, difficulty, and normalized performance, and a heatmap view with a quadrant accuracy mini-grid and input-modality filtering (hand versus no-hand).
+
+\subsubsection*{Design decision: how to deliver results to the therapist}
+One design question we revisited throughout implementation was how the therapist should receive results and interact with longitudinal data. We considered embedding reporting directly into the Unity settings UI, generating and sending summaries by email after each session, and building a dedicated therapist-facing dashboard. We ultimately chose a separate dashboard because it keeps the child-facing game interface minimal, supports richer interaction patterns that therapists already expect (tables, filters, and trend plots), and makes it easier to evolve authentication and access control without shipping a full UI inside the game client. In addition, separating the dashboard reduces the risk that reporting features add cognitive load to the child-facing experience.
+
+\placeholderfigure{Figure 9. Therapist dashboard: settings and charts (placeholder)}{2.6cm}
+\placeholderfigure{Figure 10. Therapist dashboard: heatmap view with filters (placeholder)}{2.6cm}
+
+\subsection{Evaluation and demo of your serious game}
+\subsubsection*{Evaluation approach}
+Because no child participant data were collected during development, evaluation focused on functional validation of the end-to-end pipeline and qualitative expert feedback. We validated that settings are stored and retrieved correctly, that real-time setting updates propagate to the game during play, and that session uploads populate the dashboard analytics. We also treated expert feedback as a source of clinical guidance, especially because early design work (ENS491) relied primarily on literature review and did not fully capture the practical variability of children’s needs in real therapy contexts.
+
+\subsubsection*{Expert interview and feedback (Uzm.\ Erg.\ Hazal Pural)}
+We conducted a two-hour, semi-structured interview with a certified occupational therapist, Uzm.\ Erg.\ Hazal Pural, to assess clinical plausibility, usability, and reporting relevance \cite{ref18}. A central question in the interview was which rehabilitation problem the game should target and whether the current mechanics are suitable across different profiles of cerebral palsy. The therapist’s feedback was that the game can be useful for a broad range of children with CP, and that the elasticity of settings is important because it allows tailoring to the specific child. She emphasized that the platform can support visual discrimination and range-of-motion practice, and that the hand interaction (opening and closing the palm and using fingers) can be meaningful when the optional tracking mode is stable. The interview also reinforced the value of keeping the reporting workflow separate for the therapist, since reviewing trends and heatmaps is an adult-facing task. The therapist invited the team to further develop the system in a clinical context at her clinic/Ayd\i n University after graduation.
+
+\clearpage
+\section{RESULTS \& DISCUSSION}
+\subsection{To what extent were the initial objectives realized?}
+All core objectives were realized in the final prototype. The system provides a playable serious game loop with configurable parameters and clear feedback; per-child settings are stored in MongoDB and editable via both the Unity settings UI and the therapist dashboard; settings can be synchronized during play through periodic polling (2 seconds), enabling live adjustment; session logging and storage are automatic; and the dashboard supports trend charts and spatial heatmaps. The optional hand tracking mode was integrated through a MediaPipe-based pipeline \cite{ref7} and is captured in session records via a hand-tracking-used flag.
+
+\subsection{Key system achievements}
+\subsubsection*{End-to-end integration}
+The project integrates three components that can be developed independently but operate as a single platform:
+the \textbf{Unity game client} for session execution, event logging, and optional hand tracking; the \textbf{Flask backend} for settings and session persistence, therapist authentication, and reporting endpoints; and the \textbf{React dashboard} for therapist-facing settings editing and analytics reporting.
+This integration is a key outcome because many prototypes demonstrate a game in isolation but lack a therapist-facing workflow for configuration and longitudinal review.
+
+\subsubsection*{Real-time settings synchronization}
+An important practical feature is that therapists can update settings in the dashboard and have the game reflect these changes during an ongoing session. The chosen implementation uses a lightweight polling strategy in Unity: every 2 seconds, the client requests the latest settings and applies them locally. This approach trades some network overhead for simplicity and robustness. In future work, a push-based approach (WebSockets) could reduce latency and bandwidth, but polling was sufficient for the prototype and avoids more complex networking requirements.
+
+\subsubsection*{Reporting pipeline and interpretability}
+The reporting pipeline was designed to balance enough detail for meaningful interpretation with compact storage and dashboard responsiveness. We store a settings snapshot in every session record and compute a difficulty score and normalized performance to interpret progress under changing settings. Spatial metrics and heatmaps provide additional insights beyond a single accuracy number, helping therapists detect attention drift or side bias.
+
+\subsubsection*{Example session record structure (qualitative)}
+Table~\ref{tab:example_metrics} provides an example of the types of values a therapist would see in session history. The values are illustrative placeholders; in a real deployment, they would be populated automatically from uploaded session records.
+
+\begin{table}[H]
+\centering
+\caption{Example session history metrics (illustrative placeholders).}
+\label{tab:example_metrics}
+\begin{tabular}{p{0.15\linewidth} p{0.16\linewidth} p{0.16\linewidth} p{0.16\linewidth} p{0.25\linewidth}}
+\toprule
+\textbf{Session} & \textbf{Accuracy (\%)} & \textbf{Avg. RT (s)} & \textbf{Difficulty} & \textbf{Notes (example)} \\
+\midrule
+1 & 62 & 1.45 & 0.95 & Low speed, long spawn intervals; baseline \\
+2 & 64 & 1.38 & 0.95 & Similar settings; slight improvement \\
+3 & 63 & 1.30 & 1.10 & Increased speed; maintained accuracy \\
+4 & 60 & 1.25 & 1.35 & Higher difficulty; accuracy dropped slightly \\
+5 & 66 & 1.20 & 1.35 & Adaptation; higher normalized performance \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Differences from initial objectives and scope decisions}
+The initial goal was to produce a configurable platform and demonstrate feasibility rather than claim therapeutic effectiveness. Therefore:
+no controlled clinical study or quantitative outcomes were collected during development; metrics were designed for monitoring and hypothesis generation rather than diagnosis; and security features were kept at prototype level (for example, simplified credential handling for Unity compatibility).
+These limitations are appropriate for a graduation project prototype but must be addressed before real-world deployment.
+
+\subsection{Contribution relative to state-of-the-art}
+Compared to many research prototypes, the system emphasizes per-child customization and integrated analytics, addressing gaps reported in serious games literature \cite{ref5,ref6,ref13}. The explicit integration of visual discrimination tasks aligns with CP-related visual-perceptual research \cite{ref8,ref9,ref10}. The use of session-level context snapshots and therapist-facing filtering (hand vs no-hand) supports more careful interpretation than raw aggregate scores.
+
+\subsection{Example reports and visualizations (placeholders)}
+Figures in this section are placeholders that will be replaced with screenshots from the implemented system.
+
+\placeholderfigure{Figure 11. Example session summary cards (dashboard) (placeholder)}{2.6cm}
+\placeholderfigure{Figure 12. Trend chart: accuracy, difficulty, normalized performance (placeholder)}{2.6cm}
+\placeholderfigure{Figure 13. Session history table including hand tracking used (placeholder)}{2.6cm}
+\placeholderfigure{Figure 14. Heatmap snapshots across sessions (placeholder)}{2.6cm}
+
+\subsection{Discussion: Are the chosen metrics sufficient?}
+Accuracy and reaction time are commonly used in repeated task monitoring, but they can be misleading if difficulty changes. Our normalized performance aims to address this by combining accuracy with a difficulty score derived from settings, which aligns with the therapist need to interpret performance in context. However, the metric is still heuristic and should be validated in future studies. Additional metrics worth considering include consistency measures (e.g., variance of reaction times and streak stability), spatial bias measures (e.g., changes in quadrant accuracy and symmetry indices), and learning-curve indicators that capture within-session improvement rather than only across-session trends.
+
+\subsection{Threats to validity and limitations}
+Several factors may affect interpretation of reported metrics. Environmental variability (screen size, viewing distance, camera placement) can change the effective mapping of input to world space. Input modality also matters: mouse, touch, and hand tracking require different motor strategies, so comparisons should be filtered accordingly. Target rule changes between random and fixed modes alter perceptual demands, and prototype-level security means the system is not yet ready for deployment with real child data without hardening.
+
+\clearpage
+\section{IMPACT}
+\subsection*{Scientific and technological impact}
+Technologically, the project demonstrates an end-to-end pipeline that integrates a serious game with therapist configuration and reporting. The modular design (Unity client, REST backend, React dashboard) enables rapid iteration and supports future research studies by providing built-in data collection and visualization. The optional hand tracking input demonstrates how consumer camera-based tracking can be integrated to expand accessibility without specialized sensors.
+
+\subsection*{Socio-economic impact}
+If deployed responsibly, the platform can reduce barriers to therapy-like practice by enabling engaging training outside clinic sessions. This may support more frequent practice at home and reduce caregiver burden by providing structured tasks and automatic summaries. In clinical contexts, therapist time can be used more efficiently when settings and progress data are accessible remotely.
+
+\subsection*{Innovative and entrepreneurial aspects}
+The combination of therapist-configurable parameters, per-child profiles, and integrated reporting is a differentiator relative to many standalone serious game prototypes. The invitation to develop further in a clinical context suggests potential for translation into a deployable product. Future productization would require stronger security, user management, deployment infrastructure, and clinical validation.
+
+\subsection*{Freedom-to-use (FTU) considerations}
+The prototype uses open-source components (e.g., MediaPipe for hand landmark detection) and common web/game frameworks. Any commercialization would require a careful review of third-party licenses, Unity asset licenses, and distribution constraints.
+
+\clearpage
+\section{ETHICAL ISSUES}
+Although no child participant data were collected during development, the system is intended to store identifiable child performance logs. Therefore, ethical readiness is a critical consideration for future deployment.
+
+\subsection*{Privacy, consent, and data governance}
+Future studies and deployments must obtain informed consent (from caregivers and, when appropriate, assent from children). Stored data should be minimized to what is necessary for reporting, protected at rest and in transit, and accessible only to authorized therapists. Policies should define retention periods, deletion rights, and data access auditing.
+
+\subsection*{Safety and fatigue}
+The game design must avoid excessive fatigue and frustration. Adjustable session duration and difficulty, combined with pause controls, support safe use. Therapists should supervise initial sessions and define appropriate parameter ranges for each child.
+
+\subsection*{Clinical interpretation and risk of misuse}
+The platform provides performance metrics intended for monitoring and guidance, not diagnosis. Documentation should emphasize that metrics reflect game performance under specific settings and should not be used as clinical diagnostic tools.
+
+\subsection*{Security limitations of the prototype}
+The prototype prioritizes integration and feasibility. Before deployment, the system must adopt secure password storage, robust authentication flows for children, encrypted transport (HTTPS), and secure secret management. These are out of scope for the prototype but essential for ethical deployment.
+
+\clearpage
+\section{PROJECT MANAGEMENT}
+\subsection*{Initial and final project plans}
+The project was managed as an iterative development process across ENS491 and ENS492. ENS491 emphasized requirements definition, game design decisions, and early prototyping. ENS492 focused on full-stack implementation, integration, reporting features, and expert feedback.
+
+\subsection*{Timeline and milestones}
+From Oct--Nov 2025 (ENS491/early ENS492), we focused on core design, architecture planning, and a gameplay prototype. In Dec 2025, we integrated MediaPipe hand tracking and refined input handling, which surfaced performance-related issues such as flickering and unstable scaling in the tracking visualization on some machines. In Jan 2026, we strengthened the reporting pipeline by building a dedicated therapist dashboard, added and refined session analytics and heatmap reporting, and collected qualitative feedback from a certified occupational therapist. During this phase, one practical integration bug was that settings were being updated in MongoDB but were not reflected in the game during play; we addressed this by implementing periodic settings polling so that therapist-edited parameters are retrieved and applied during a running session. We also iterated on database deployment, initially using MongoDB Atlas for convenience and later switching to local development with MongoDB Compass to simplify debugging and offline iteration.
+
+\placeholderfigure{Figure 15. Project timeline / Gantt chart (placeholder)}{2.6cm}
+
+\subsection*{Risk management and mitigations}
+\begin{table}[H]
+\centering
+\caption{Key project risks and mitigations.}
+\label{tab:risks}
+\begin{tabular}{p{0.26\linewidth} p{0.36\linewidth} p{0.30\linewidth}}
+\toprule
+\textbf{Risk} & \textbf{Impact} & \textbf{Mitigation} \\
+\midrule
+Tracking instability (camera hand tracking) & Unreliable input affects usability & Provide mouse/touch fallback; make hand tracking optional and configurable \\
+Scope creep (features vs integration) & Incomplete end-to-end pipeline & Prioritize full-stack integration first; iterate features after pipeline works \\
+Reporting complexity & Hard to interpret progress under changing difficulty & Store settings snapshot per session; compute difficulty and normalized performance \\
+Ethical/security readiness & Limits deployability with real children & Treat as prototype; document constraints; plan security hardening in future work \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{What we learned about managing the project}
+Key lessons include prioritizing an end-to-end pipeline early (login $\rightarrow$ settings $\rightarrow$ play $\rightarrow$ upload $\rightarrow$ dashboard) to reduce integration risk, maintaining modular separation in Unity to simplify input and analytics changes, and collecting therapist feedback after the reporting dashboard existed so discussions could focus on concrete controls and metrics.
+
+\clearpage
+\section{CONCLUSION AND FUTURE WORK}
+Serious Fishing delivers an end-to-end serious game platform for upper-limb motor practice and visual discrimination training in children with cerebral palsy. The final prototype integrates a Unity game client with configurable difficulty and optional hand tracking, a Flask backend with MongoDB persistence, and a therapist dashboard that supports per-child settings and longitudinal analytics. Expert feedback from a certified occupational therapist indicates that the platform is clinically plausible, configurable for diverse needs, and that the reporting workflow is useful for monitoring.
+
+\subsection*{Limitations}
+The primary limitation is evaluation scope: no child participant data were collected and no controlled clinical study was performed. Therefore, the project demonstrates feasibility rather than therapeutic effectiveness. Additionally, the prototype security model is not sufficient for deployment with sensitive child data.
+
+\subsection*{Future work}
+Future work should include clinical pilots in a supervised context to collect real session data and validate usability and metric interpretability, as well as input-modality studies that compare mouse, touch, and hand tracking and refine calibration methods. On the analytics side, the reporting pipeline can be extended with consistency metrics, spatial symmetry indices, and within-session learning indicators, alongside validation of the normalized performance measure. Before deployment, the system also requires security hardening (secure authentication, HTTPS, secrets management, access control, and auditing). Finally, feature expansion can explore alternative catch mechanics, adaptive difficulty recommendations, and exportable reports (PDF/CSV) for clinic documentation.
+The invitation to further develop the system in a clinical setting after graduation provides a practical pathway for validation and translation.
+
+\clearpage
+\section{APPENDIX}
+\subsection*{Deployment notes (prototype)}
+Local prototype deployment requires: (1) a running MongoDB instance; (2) the Flask backend API (default \texttt{http://127.0.0.1:5001}); (3) the React dashboard dev server (default \texttt{http://localhost:3000}); and (4) the Unity client configured to use the backend base URL. Production deployment would require HTTPS, secure secrets management, and role-based access controls.
+
+\subsection*{Implementation environment (prototype)}
+The Unity client was developed and tested with Unity Editor version \texttt{6000.3.1f1} \cite{ref14}. The Flask backend depends on \texttt{flask}, \texttt{flask-cors}, \texttt{pymongo}, \texttt{python-dotenv}, and \texttt{PyJWT}. The therapist dashboard is a React 18 application built with Vite and uses Axios for API calls and Chart.js for visualizations. These choices reflect a preference for widely used tools that simplify integration and lower maintenance overhead for an academic prototype.
+
+\begin{table}[H]
+\centering
+\caption{Prototype software stack (selected versions from project manifests).}
+\label{tab:stack_versions}
+\begin{tabular}{p{0.28\linewidth} p{0.22\linewidth} p{0.42\linewidth}}
+\toprule
+\textbf{Component} & \textbf{Version} & \textbf{Notes} \\
+\midrule
+Unity Editor & 6000.3.1f1 & 2D game client, UI Toolkit, UnityWebRequest \\
+React & 18.2.0 & Therapist dashboard UI \\
+Vite & 5.0.7 & Dev server and build tooling for dashboard \\
+Chart.js & 4.4.0 & Trend plots and multi-axis charts \\
+Flask & (requirements) & REST API backend \\
+MongoDB & (local) & Document storage for users, settings, sessions \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Example session JSON payload (simplified)}
+\begin{verbatim}
+{
+  "userId": "<child_id>",
+  "username": "<child_username>",
+  "sessionStartTime": "2026-01-03T12:34:56Z",
+  "sessionEndTime": "2026-01-03T12:44:56Z",
+  "sessionDuration": 600.0,
+  "handTrackingUsed": false,
+  "gameSettings": {
+    "speedMultiplier": 1.4,
+    "minSpawnInterval": 2.0,
+    "maxSpawnInterval": 4.0,
+    "spawnFrom": "Random",
+    "targetFishMode": "FixedRed"
+  },
+  "correctFish": 24,
+  "wrongFish": 6,
+  "missedFish": 2,
+  "totalClicks": 40,
+  "fishAccuracy": 0.60,
+  "averageReactionTime": 1.24,
+  "quadrantAccuracy": { "topLeft": 0.72, "topRight": 0.55, "bottomLeft": 0.60, "bottomRight": 0.66 },
+  "clickPositions": [ {"x":0.5,"y":-1.2,"correct":true}, ... ]
+}
+\end{verbatim}
+
+\subsection*{API endpoints (high-level)}
+The Unity client uses \texttt{POST /register}, \texttt{POST /login}, \texttt{GET/POST /game-settings}, and \texttt{POST /save-session}. The therapist dashboard uses \texttt{POST /api/auth/register}, \texttt{POST /api/auth/login}, and \texttt{GET /api/auth/verify} for authentication, and accesses children and settings through \texttt{GET /api/therapist/children}, \texttt{POST /api/therapist/children}, and \texttt{GET/PUT /api/therapist/children/\{id\}/settings}. Reporting endpoints include \texttt{GET /api/therapist/children/\{id\}/sessions}, \texttt{GET /api/therapist/children/\{id\}/progress}, and \texttt{GET /api/therapist/children/\{id\}/heatmap}.
+
+\clearpage
+\section{REFERENCES}
+\begin{thebibliography}{99}
+\bibitem{ref1} P. Rosenbaum, N. Paneth, A. Leviton, M. Goldstein, M. Bax, D. Damiano, B. Dan, and B. Jacobsson, ``A report: the definition and classification of cerebral palsy April 2006,'' \textit{Dev. Med. Child Neurol. Suppl.}, vol. 109, pp. 8--14, 2007. PubMed: \url{https://pubmed.ncbi.nlm.nih.gov/17370477/}
+\bibitem{ref2} M. Oskoui, F. Coutinho, J. Dykeman, N. Jett\'e, and T. Pringsheim, ``An update on the prevalence of cerebral palsy: a systematic review and meta-analysis,'' \textit{Dev. Med. Child Neurol.}, vol. 55, no. 6, pp. 509--519, 2013. DOI: \url{https://doi.org/10.1111/dmcn.12080}
+\bibitem{ref3} A. Colver, C. Fairhurst, and P. O. D. Pharoah, ``Cerebral palsy,'' \textit{The Lancet}, vol. 383, no. 9924, pp. 1240--1249, 2014. DOI: \url{https://doi.org/10.1016/S0140-6736(13)61835-8}
+\bibitem{ref4} Y. Chen, H. C. D. Fanchiang, and A. Howard, ``Effectiveness of virtual reality in children with cerebral palsy: a systematic review and meta-analysis of randomized controlled trials,'' \textit{Phys. Ther.}, vol. 98, no. 1, pp. 63--77, 2018. DOI: \url{https://doi.org/10.1093/ptj/pzx107}
+\bibitem{ref5} J. P. Proen\c{c}a, C. Quaresma, and P. Vieira, ``Serious games for upper limb rehabilitation: a systematic review,'' \textit{Disabil. Rehabil. Assist. Technol.}, vol. 13, no. 1, pp. 95--100, 2018. DOI: \url{https://doi.org/10.1080/17483107.2017.1290702}
+\bibitem{ref6} A. C. Alarc\'on-Aldana, M. Callejas-Cuervo, and A. P. Lanari Bo, ``Upper limb physical rehabilitation using serious videogames and motion capture systems: a systematic review,'' \textit{Sensors}, vol. 20, no. 21, p. 5989, 2020. DOI: \url{https://doi.org/10.3390/s20215989}
+\bibitem{ref7} R. Yoshimura (homuler), ``MediaPipe Unity Plugin,'' GitHub repository. Available: \url{https://github.com/homuler/MediaPipeUnityPlugin}
+\bibitem{ref8} A. Ego, K. Lidzba, P. Brovedani, S. Gonzalez-Monge, P. Boudia, and O. Brochard, ``Visual-perceptual impairment in children with cerebral palsy: a systematic review,'' \textit{Dev. Med. Child Neurol.}, vol. 57, no. 1, pp. 46--51, 2015. DOI: \url{https://doi.org/10.1111/dmcn.12687}
+\bibitem{ref9} M. F. Costa and J. C. Pereira, ``Correlations between color perception and motor function impairment in children with spastic cerebral palsy,'' \textit{Behav. Brain Funct.}, vol. 10, art. 22, 2014. DOI: \url{https://doi.org/10.1186/1744-9081-10-22}
+\bibitem{ref10} S. Cho and W. J. Lee, ``Effects of visual perceptual intervention on visual-motor integration and activities of daily living in children with cerebral palsy,'' \textit{J. Phys. Ther. Sci.}, vol. 27, no. 2, pp. 411--413, 2015. DOI: \url{https://doi.org/10.1589/jpts.27.411}
+\bibitem{ref11} E. Avcil, D. Tarakci, N. Arman, and E. Tarakci, ``Upper extremity rehabilitation using video games in cerebral palsy: a randomized clinical trial,'' \textit{Acta Neurol. Belg.}, vol. 121, no. 4, pp. 1053--1060, 2021. DOI: \url{https://doi.org/10.1007/s13760-020-01400-8}
+\bibitem{ref12} E. Koutsiana et al., ``Serious Gaming Technology in Upper Extremity Rehabilitation: Scoping Review,'' \textit{JMIR Serious Games}, vol. 8, no. 4, e19071, 2020. DOI: \url{https://doi.org/10.2196/19071}
+\bibitem{ref13} C. Vieira, C. Ferreira da Silva Pais-Vieira, J. Novais, and A. Perrotta, ``Serious Game Design and Clinical Improvement in Physical Rehabilitation: Systematic Review,'' \textit{JMIR Serious Games}, vol. 9, no. 3, e20066, 2021. DOI: \url{https://doi.org/10.2196/20066}
+\bibitem{ref14} Unity Technologies, ``Unity Manual (Unity 6.3 / 6000.3),'' Available: \url{https://docs.unity3d.com/6000.3/Documentation/Manual/index.html}
+\bibitem{ref15} MongoDB, Inc., ``MongoDB Manual: Documents,'' Available: \url{https://www.mongodb.com/docs/manual/core/document/}
+\bibitem{ref18} H. Pural, ``Interview on Serious Fishing clinical alignment and reporting needs,'' personal communication (semi-structured interview, 2 hours), Jan. 2026.
+\end{thebibliography}
+
+\end{document}
